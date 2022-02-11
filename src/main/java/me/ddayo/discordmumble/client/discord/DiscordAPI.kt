@@ -4,6 +4,9 @@ package me.ddayo.discordmumble.client.discord
 class DiscordAPI {
     companion object {
         @JvmStatic
+        external fun initialize(): Int
+
+        @JvmStatic
         external fun isMuted(): Boolean
 
         @JvmStatic

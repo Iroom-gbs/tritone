@@ -1,0 +1,15 @@
+[package]
+name = "native"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+discord_game_sdk = "1.0.1"
+jni = "0.19.0"
+primes = "0.3.0"
+lazy_static = "1.4.0"
+
+[lib]
+crate-type = ["cdylib"]

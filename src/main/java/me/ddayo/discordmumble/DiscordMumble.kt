@@ -9,6 +9,7 @@ import net.minecraftforge.common.MinecraftForge
 import me.ddayo.discordmumble.DiscordMumble
 import me.ddayo.discordmumble.DiscordMumble.Companion.MOD_ID
 import me.ddayo.discordmumble.client.ClientEvent
+import me.ddayo.discordmumble.client.discord.DiscordAPI
 import net.minecraft.block.Block
 import net.minecraft.block.Blocks
 import net.minecraftforge.fml.InterModComms
@@ -31,6 +32,8 @@ class DiscordMumble {
     }
 
     init {
+        System.loadLibrary("native")
+        LOGGER.info(DiscordAPI.initialize())
         FMLJavaModLoadingContext.get().modEventBus.addListener { event: FMLCommonSetupEvent -> setup(event) }
         MinecraftForge.EVENT_BUS.register(this)
         FMLJavaModLoadingContext.get().modEventBus.register(ClientEvent())
