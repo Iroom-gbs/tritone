@@ -1,0 +1,26 @@
+modLoader="javafml"
+loaderVersion="[36,)"
+license="MIT"
+[[mods]]
+modId="discordmumble"
+version="${file.jarVersion}"
+displayName="Discord mumble"
+updateJSONURL="https://github.com/dayo05/discordMumble"
+authors="Dayo" #optional
+# The description text for the mod (multi line!) (#mandatory)
+description='''
+Discord mumble
+'''
+[[dependencies.discordmumble]]
+   modId="forge"
+   mandatory=true
+   versionRange="[36,)"
+   ordering="NONE"
+   side="BOTH"
+
+[[dependencies.discordmumble]]
+   modId="minecraft"
+   mandatory=true
+   versionRange="[1.16.5,1.17)"
+   ordering="NONE"
+   side="BOTH"
