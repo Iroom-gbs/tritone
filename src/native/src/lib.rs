@@ -7,7 +7,6 @@
 use std::process::exit;
 use discord_game_sdk::{Activity, Discord, EventHandler, SearchQuery};
 use jni::JNIEnv;
-use jni::objects::JValue;
 use jni::sys::{jboolean, JNI_FALSE, JNI_TRUE, jobject};
 
 
@@ -45,7 +44,7 @@ fn getDiscord()-> &'static mut Discord<'static,DiscordEvent> {
 }
 
 #[no_mangle]
-pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_initialize(env: JNIEnv, object: jobject) {
+pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_initialize(env: &'static JNIEnv, object: jobject) {
     unsafe { DISCORD = Some(Discord::new(941752061945581608).unwrap()); }
     getDiscord().update_activity(&Activity::empty()
         .with_state("Test")
@@ -53,6 +52,10 @@ pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_initialize(e
         if let Err(err) = result {
             exit(ACTIVITY_UPDATE_FAILED);
         }
+        match env.call_static_method("/me/ddayo/discordmumble/client/discord/DiscordAPI", "nativeInitialized", "()V", &[]) {
+            Err(e) => exit(JNI_ERROR),
+            Ok(r) => ()
+        };
     });
 }
 
@@ -93,7 +96,10 @@ pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_getServerLis
             exit(LOBBY_CONNECT_FAILED);
         }
 
-        let mut serverList = env.new_object_array(discord.lobby_count() as i32, env.find_class("/java/lang/String").unwrap(), env.new_string("").unwrap().into_inner()).unwrap();
+        let serverList = match env.new_object_array(discord.lobby_count() as i32, env.find_class("/java/lang/String").unwrap(), env.new_string("").unwrap().into_inner()) {
+            Err(e) => exit(JNI_ERROR),
+            Ok(l) => l
+        };
         let mut index = 0;
         for x in discord.iter_lobbies() {
             let lobby: i64 = x.unwrap();
@@ -101,8 +107,15 @@ pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_getServerLis
                 Err(e) => exit(INVALID_LOBBY),
                 Ok(s) => s
             };
-            env.set_object_array_element(serverList, index, env.new_string(lobby.to_string() + "/" + name.as_str()).unwrap());
+            match env.set_object_array_element(serverList, index, env.new_string(lobby.to_string() + "/" + name.as_str()).unwrap()) {
+                Err(e) => exit(JNI_ERROR),
+                Ok(r) => ()
+            };
+            index += 1;
         }
-        env.call_static_method("/me/ddayo/discordmumble/client/discord/DiscordAPI", "", "", &[serverList.into()]);
+        match env.call_static_method("/me/ddayo/discordmumble/client/discord/DiscordAPI", "serverListReloaded", "([Ljava/lang/String;)V", &[serverList.into()]) {
+            Err(e) => exit(JNI_ERROR),
+            Ok(r) => ()
+        };
     });
 }

@@ -5,6 +5,8 @@ import org.apache.logging.log4j.LogManager
 
 class DiscordAPI {
     companion object {
+        val logger = LogManager.getLogger()
+
         @JvmStatic
         external fun initialize()
 
@@ -20,10 +22,21 @@ class DiscordAPI {
         @JvmStatic
         private external fun setUnmute()
 
+        //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
         @JvmStatic
-        fun testCallback(l: List<String>) {
-            
+        fun serverListReloaded(l: Array<String>) {
+            for(x in l)
+                logger.info(l);
         }
+
+        //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
+        @JvmStatic
+        fun nativeInitialized() {
+            logger.info("Native Initialized")
+        }
+
+        @JvmStatic
+        external fun getServerList()
 
         @JvmStatic
         external fun isInputMuted(): Boolean
