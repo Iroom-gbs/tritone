@@ -6,9 +6,8 @@
 
 use std::process::exit;
 use discord_game_sdk::{Activity, Discord, EventHandler, SearchQuery};
-use jni::JNIEnv;
+use jni::{JavaVM, JNIEnv};
 use jni::sys::{jboolean, JNI_FALSE, JNI_TRUE, jobject};
-
 
 //ERROR_CODE
 static NO_DISCORD: i32 = 1;
@@ -34,6 +33,7 @@ impl Default for DiscordEvent {
 }
 
 static mut DISCORD : Option<Discord<DiscordEvent>> = Option::None;
+static mut VM: Option<JavaVM> = Option::None;
 
 fn getDiscord()-> &'static mut Discord<'static,DiscordEvent> {
     return unsafe { match DISCORD
@@ -43,9 +43,17 @@ fn getDiscord()-> &'static mut Discord<'static,DiscordEvent> {
     }};
 }
 
-#[no_mangle]
-pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_initialize(env: &'static JNIEnv, object: jobject) {
+fn getVM()-> &'static mut JavaVM {
+    return unsafe { match VM {
+        Some(ref mut vm) => vm,
+        None => exit(JNI_ERROR)
+    }};
+}
 
+#[no_mangle]
+pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_initialize(env: JNIEnv, object: jobject) {
+
+    unsafe { VM = Some(env.get_java_vm().unwrap()); }
     match env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "nativeInitialized", "()V", &[]) {
         Err(e) => {
             println!("JNI ERROR");
@@ -57,6 +65,8 @@ pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_initialize(e
     getDiscord().update_activity(&Activity::empty()
         .with_state("Test")
         .with_details("와 성공!"), |discord, result| {
+        println!("Callback received");
+        let env = getVM().attach_current_thread_permanently().unwrap();
         if let Err(err) = result {
             exit(ACTIVITY_UPDATE_FAILED);
         }
@@ -65,6 +75,7 @@ pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_initialize(e
             Ok(r) => ()
         };
     });
+    println!("Setup finished: JNI");
 }
 
 #[no_mangle]
