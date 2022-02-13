@@ -45,6 +45,14 @@ fn getDiscord()-> &'static mut Discord<'static,DiscordEvent> {
 
 #[no_mangle]
 pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_initialize(env: &'static JNIEnv, object: jobject) {
+
+    match env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "nativeInitialized", "()V", &[]) {
+        Err(e) => {
+            println!("JNI ERROR");
+            println!("{}", e);
+        },
+        Ok(r) => ()
+    };
     unsafe { DISCORD = Some(Discord::new(941752061945581608).unwrap()); }
     getDiscord().update_activity(&Activity::empty()
         .with_state("Test")

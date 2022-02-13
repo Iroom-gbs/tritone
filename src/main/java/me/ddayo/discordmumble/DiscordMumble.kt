@@ -16,7 +16,7 @@ import org.apache.logging.log4j.LogManager
 class DiscordMumble {
     companion object {
         // Directly reference a log4j logger.
-        private val LOGGER = LogManager.getLogger()
+        private val logger = LogManager.getLogger()
         const val MOD_ID = "discordmumble"
     }
 
@@ -24,6 +24,7 @@ class DiscordMumble {
         System.loadLibrary("discord_game_sdk")
         System.loadLibrary("native")
         DiscordAPI.initialize()
+        logger.info("asdf")
         FMLJavaModLoadingContext.get().modEventBus.addListener { event: FMLCommonSetupEvent -> setup(event) }
         MinecraftForge.EVENT_BUS.register(this)
         FMLJavaModLoadingContext.get().modEventBus.register(ClientFMLEvent())
