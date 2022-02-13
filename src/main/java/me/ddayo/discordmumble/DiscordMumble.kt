@@ -2,23 +2,12 @@ package me.ddayo.discordmumble
 
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent
-import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.common.MinecraftForge
-import me.ddayo.discordmumble.DiscordMumble
 import me.ddayo.discordmumble.DiscordMumble.Companion.MOD_ID
-import me.ddayo.discordmumble.client.ClientEvent
+import me.ddayo.discordmumble.client.ClientFMLEvent
 import me.ddayo.discordmumble.client.discord.DiscordAPI
-import net.minecraft.block.Block
-import net.minecraft.block.Blocks
-import net.minecraftforge.fml.InterModComms
-import net.minecraftforge.fml.InterModComms.IMCMessage
-import java.util.stream.Collectors
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber
-import net.minecraftforge.event.RegistryEvent.Register
 import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
 
@@ -32,11 +21,12 @@ class DiscordMumble {
     }
 
     init {
+        System.loadLibrary("discord_game_sdk")
         System.loadLibrary("native")
-        LOGGER.info(DiscordAPI.initialize())
+        DiscordAPI.initialize()
         FMLJavaModLoadingContext.get().modEventBus.addListener { event: FMLCommonSetupEvent -> setup(event) }
         MinecraftForge.EVENT_BUS.register(this)
-        FMLJavaModLoadingContext.get().modEventBus.register(ClientEvent())
+        FMLJavaModLoadingContext.get().modEventBus.register(ClientFMLEvent())
     }
 
     private fun setup(event: FMLCommonSetupEvent) {

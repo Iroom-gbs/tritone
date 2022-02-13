@@ -1,10 +1,15 @@
 package me.ddayo.discordmumble.client.discord
 
+import org.apache.logging.log4j.LogManager
+
 
 class DiscordAPI {
     companion object {
         @JvmStatic
-        external fun initialize(): Int
+        external fun initialize()
+
+        @JvmStatic
+        external fun tick()
 
         @JvmStatic
         external fun isMuted(): Boolean
@@ -16,6 +21,11 @@ class DiscordAPI {
         private external fun setUnmute()
 
         @JvmStatic
+        fun testCallback(l: List<String>) {
+            
+        }
+
+        @JvmStatic
         external fun isInputMuted(): Boolean
 
         @JvmStatic
@@ -24,7 +34,10 @@ class DiscordAPI {
         @JvmStatic
         private external fun setInputUnmute()
 
-        fun inverseMuteStatus() = if(isMuted()) setUnmute() else setMute()
+        fun inverseMuteStatus() {
+            LogManager.getLogger().info(isMuted())
+            if(isMuted()) setUnmute() else setMute()
+        }
 
         fun inverseInputMuteStatus() = if(isInputMuted()) setInputUnmute() else setInputMute()
 
