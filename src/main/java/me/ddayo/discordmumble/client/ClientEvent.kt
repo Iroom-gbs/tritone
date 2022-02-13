@@ -10,9 +10,14 @@ class ClientEvent {
     companion object {
         val logger = LogManager.getLogger()
     }
-
+/*
     @SubscribeEvent(priority = EventPriority.HIGH)
     fun onRender(event: RenderGameOverlayEvent.Pre) {
+        DiscordAPI.tick()
+    }
+  */
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    fun onRd(event: net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent.Pre) {
         DiscordAPI.tick()
     }
 }

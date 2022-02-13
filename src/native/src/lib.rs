@@ -69,10 +69,6 @@ pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_initialize(e
         if let Err(err) = result {
             exit(ACTIVITY_UPDATE_FAILED);
         }
-        match env.call_static_method("/me/ddayo/discordmumble/client/discord/DiscordAPI", "nativeInitialized", "()V", &[]) {
-            Err(e) => exit(JNI_ERROR),
-            Ok(r) => ()
-        };
     });
     println!("Setup finished: JNI");
 }

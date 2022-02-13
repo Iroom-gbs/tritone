@@ -32,7 +32,7 @@ class DiscordAPI {
         //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
         @JvmStatic
         fun nativeInitialized() {
-            logger.info("Native Initialized")
+            //logger.info("Native Initialized")
         }
 
         @JvmStatic
