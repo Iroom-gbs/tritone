@@ -3,6 +3,12 @@ package me.ddayo.tritone.client.discord
 import org.apache.logging.log4j.LogManager
 
 
+/***************************************
+                 Warning
+
+   Do not remove unused method here!!!
+ ***************************************/
+
 class DiscordAPI {
     companion object {
         val logger = LogManager.getLogger()
@@ -33,7 +39,6 @@ class DiscordAPI {
         @JvmStatic
         fun nativeInitialized() {
             logger.info("Native Initialized")
-            //getServerList()
             joinLobby("kkkk")
         }
 
@@ -88,6 +93,22 @@ class DiscordAPI {
         @JvmStatic
         fun getMCName(): String {
             return "Testname"
+        }
+
+        val voicePlayerList = emptyMap<String, Long>().toMutableMap()
+
+        //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
+        @JvmStatic
+        fun addVoicePlayer(name: String, id: Long) {
+            logger.info("$name with $id added")
+            voicePlayerList[name] = id
+            setVoiceLevel(id, 0) //mute by default
+        }
+
+        @JvmStatic
+        fun clearVoicePlayerList() {
+            logger.info("cleared")
+            voicePlayerList.clear()
         }
     }
 }

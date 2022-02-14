@@ -32,10 +32,4 @@ class Tritone {
     private fun setup(event: FMLCommonSetupEvent) {
 
     }
-
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
-    @SubscribeEvent
-    fun onServerStarting(event: FMLServerStartingEvent) {
-
-    }
 }

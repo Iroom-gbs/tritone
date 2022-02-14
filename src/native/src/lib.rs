@@ -10,7 +10,7 @@ use discord_game_sdk::{Activity, Cast, Comparison, Discord, EventHandler, LobbyK
 use jni::{JavaVM, JNIEnv};
 use jni::objects::JString;
 use jni::strings::JavaStr;
-use jni::sys::{jboolean, jlong, JNI_FALSE, JNI_TRUE, jobject};
+use jni::sys::{jboolean, jint, jlong, JNI_FALSE, JNI_TRUE, jobject};
 
 //ERROR_CODE
 static NO_DISCORD: i32 = 1;
@@ -37,6 +37,8 @@ impl Default for DiscordEvent {
 
 static mut DISCORD : Option<Discord<DiscordEvent>> = Option::None;
 static mut VM: Option<JavaVM> = Option::None;
+
+const DISCORD_API_CLASS: &str = "me/ddayo/tritone/client/discord/DiscordAPI";
 
 fn getDiscord()-> &'static mut Discord<'static,DiscordEvent> {
     return unsafe { match DISCORD
@@ -104,7 +106,8 @@ pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_isMuted(env: JNIEn
 }
 
 fn get_mc_name(env: &JNIEnv)->String {
-    env.get_string(JString::from(env.call_static_method("me/ddayo/tritone/client/discord/DiscordAPI", "getMCName", "()Ljava/lang/String;", &[]).unwrap().l().unwrap())).unwrap().to_str().unwrap().to_string()
+    //return "Testname".to_string();
+    env.get_string(JString::from(env.call_static_method(DISCORD_API_CLASS, "getMCName", "()Ljava/lang/String;", &[]).unwrap().l().unwrap())).unwrap().to_str().unwrap().to_string()
 }
 
 #[no_mangle]
@@ -122,17 +125,18 @@ pub unsafe extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_joinLobby(e
                 .kind(LobbyKind::Public)
                 .add_metadata("name".to_string(), name.to_string()), |discord, result| {
                 let env = getVM().attach_current_thread_permanently().unwrap();
-                env.call_static_method("me/ddayo/tritone/client/discord/DiscordAPI", "lobbyMovedPre", "(J)V", &[(result.unwrap().id() as jlong).into()]);
+                env.call_static_method(DISCORD_API_CLASS, "lobbyMovedPre", "(J)V", &[(result.unwrap().id() as jlong).into()]);
+                env.call_static_method(DISCORD_API_CLASS, "clearVoicePlayerList", "()V", &[]);
 
                 discord.connect_lobby_voice(result.unwrap().id(), |discord, result| {
                     let env = getVM().attach_current_thread_permanently().unwrap();
-                    env.call_static_method("me/ddayo/tritone/client/discord/DiscordAPI", "voiceConnected", "()V", &[]);
+                    env.call_static_method(DISCORD_API_CLASS, "voiceConnected", "()V", &[]);
                 });
 
                 discord.update_lobby(result.unwrap().id(), &LobbyTransaction::new()
                     .add_metadata("p".to_string(), result.unwrap().secret().to_string()), |discord, result| {
                     let env = getVM().attach_current_thread_permanently().unwrap();
-                    env.call_static_method("me/ddayo/tritone/client/discord/DiscordAPI", "lobbyMoved", "()V", &[]);
+                    env.call_static_method(DISCORD_API_CLASS, "lobbyMoved", "()V", &[]);
                 });
 
                 discord.update_member(result.unwrap().id(), discord.current_user().unwrap().id(), &LobbyMemberTransaction::new()
@@ -162,12 +166,20 @@ pub unsafe extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_joinLobby(e
                     }
                 });
 
-                discord.connect_lobby_voice(result.unwrap().id(), |discord, result| {
-                    let env = getVM().attach_current_thread_permanently().unwrap();
-                    env.call_static_method("me/ddayo/tritone/client/discord/DiscordAPI", "voiceConnected", "()V", &[]);
+                let lid = result.unwrap().id();
+                discord.connect_lobby_voice(result.unwrap().id(), move |discord, result| {
+                    let env = getVM().attach_current_thread_permanently().unwrap();env.call_static_method(DISCORD_API_CLASS, "clearVoicePlayerList", "()V", &[]);
+                    for user in discord.iter_lobby_member_ids(lid).unwrap() {
+                        let mcName = discord.lobby_member_metadata(lid, user.unwrap(), "mc");
+                        if mcName.is_ok() {
+                            env.call_static_method(DISCORD_API_CLASS, "addVoicePlayer", "(Ljava/lang/String;J)V", &[env.new_string(mcName.unwrap()).unwrap().into(), (user.unwrap() as jlong).into()]);
+                        }
+                    }
+                    env.call_static_method(DISCORD_API_CLASS, "voiceConnected", "()V", &[]);
                 });
-                env.call_static_method("me/ddayo/tritone/client/discord/DiscordAPI", "lobbyMovedPre", "(J)V", &[(result.unwrap().id() as jlong).into()]);
-                env.call_static_method("me/ddayo/tritone/client/discord/DiscordAPI", "lobbyMoved", "()V", &[]);
+
+                env.call_static_method(DISCORD_API_CLASS, "lobbyMovedPre", "(J)V", &[(result.unwrap().id() as jlong).into()]);
+                env.call_static_method(DISCORD_API_CLASS, "lobbyMoved", "()V", &[]);
             });
         }
     });
@@ -208,7 +220,7 @@ pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_getServerList(env:
             };
             index += 1;
         }
-        match env.call_static_method("me/ddayo/tritone/client/discord/DiscordAPI", "serverListReloaded", "([Ljava/lang/String;)V", &[serverList.into()]) {
+        match env.call_static_method(DISCORD_API_CLASS, "serverListReloaded", "([Ljava/lang/String;)V", &[serverList.into()]) {
             Err(e) => {
                 println!("Method not found");
                 exit(JNI_ERROR)
@@ -216,4 +228,15 @@ pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_getServerList(env:
             Ok(r) => ()
         };
     });
+}
+
+#[no_mangle]
+pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_setVoiceLevel(env: JNIEnv, object: jobject, uid: jlong, level: jint) {
+    println!("V: {} {}", uid, level as u8);
+    match getDiscord().set_local_volume(uid, level as u8) {
+        Err(e) => {
+            println!("{}", e);
+        }
+        _ => ()
+    }
 }
