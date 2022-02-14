@@ -9,7 +9,7 @@
    * There are many other Minecraft prioxity voice chat modes.
    * Due to the limitations of Discord, 3D sound is not supported.
   ## Why use this?
-   * Triton **does not** require any configuration on the server side. so, you can use Tritone on any public server in Minecraft.
+   * Tritone **does not** require any configuration on the server side. so, you can use Tritone on any public server in Minecraft.
    * Discord's voice chat has better sound quality than other modes.
   ## For development...
    * We used Rust JNI for on-JVM use of discord-game-sdk.
