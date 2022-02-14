@@ -34,18 +34,33 @@ class DiscordAPI {
         fun nativeInitialized() {
             logger.info("Native Initialized")
             //getServerList()
-            createLobby()
+            joinLobby("kkkk")
+        }
+
+        @JvmStatic
+        var currentLobby: Long = 0
+
+        //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
+        @JvmStatic
+        fun lobbyMovedPre(lobby: Long) {
+            currentLobby = lobby
         }
 
         //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
         @JvmStatic
-        fun lobbyCreated(lobby: Long) {
-            logger.info("Lobby: $lobby has created")
+        fun voiceConnected() {
+            logger.info("Voice connected")
+        }
+
+        //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
+        @JvmStatic
+        fun lobbyMoved() {
+            logger.info("Lobby: $currentLobby has moved")
             getServerList()
         }
 
         @JvmStatic
-        external fun createLobby()
+        external fun joinLobby(name: String)
 
         @JvmStatic
         external fun getServerList()
@@ -68,9 +83,5 @@ class DiscordAPI {
 
         @JvmStatic
         external fun setVoiceLevel(id: Long, level: Int)
-
-        fun moveVoiceChannelAsync() {
-
-        }
     }
 }

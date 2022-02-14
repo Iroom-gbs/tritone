@@ -4,9 +4,12 @@
 #![allow(non_snake_case)]
 #![allow(unused_variables)]
 
+use std::borrow::Borrow;
 use std::process::exit;
-use discord_game_sdk::{Activity, Discord, EventHandler, LobbyKind, LobbyTransaction, SearchQuery};
+use discord_game_sdk::{Activity, Cast, Comparison, Discord, EventHandler, LobbyKind, LobbyTransaction, SearchQuery};
 use jni::{JavaVM, JNIEnv};
+use jni::objects::JString;
+use jni::strings::JavaStr;
 use jni::sys::{jboolean, jlong, JNI_FALSE, JNI_TRUE, jobject};
 
 //ERROR_CODE
@@ -101,33 +104,63 @@ pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_isMuted(env:
 }
 
 #[no_mangle]
-pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_createLobby(env: JNIEnv, object: jobject) {
-    getDiscord().create_lobby(&LobbyTransaction::new()
-        .capacity(10)
-        .kind(LobbyKind::Public)
-        .add_metadata("name".to_string(), "test".to_string()), |discord, result| {
-        let env = getVM().attach_current_thread_permanently().unwrap();
-        env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "lobbyCreated", "(J)V", &[(result.unwrap().id() as jlong).into()]);
-    })
+pub unsafe extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_joinLobby(env: JNIEnv, object: jobject, jlobbyName: JString) {
+    let name = env.get_string(jlobbyName).unwrap().to_str().unwrap().to_string();
+    println!("Start query");
+    getDiscord().lobby_search(&SearchQuery::new()
+        .filter("metadata.name".to_string(), Comparison::Equal, name.to_string(), Cast::String)
+        .limit(10), move |discord, result| {
+
+        if discord.lobby_count() == 0 {
+            println!("Create!");
+            discord.create_lobby(&LobbyTransaction::new()
+                .capacity(10)
+                .kind(LobbyKind::Public)
+                .add_metadata("name".to_string(), name.to_string()), |discord, result| {
+                let env = getVM().attach_current_thread_permanently().unwrap();
+                env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "lobbyMovedPre", "(J)V", &[(result.unwrap().id() as jlong).into()]);
+
+                discord.connect_lobby_voice(result.unwrap().id(), |discord, result| {
+                    let env = getVM().attach_current_thread_permanently().unwrap();
+                    env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "voiceConnected", "()V", &[]);
+                });
+
+                discord.update_lobby(result.unwrap().id(), &LobbyTransaction::new()
+                    .add_metadata("p".to_string(), result.unwrap().secret().to_string()), |discord, result| {
+                    let env = getVM().attach_current_thread_permanently().unwrap();
+                    env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "lobbyMoved", "()V", &[]);
+                });
+            })
+        }
+        else {
+            discord.connect_lobby(discord.lobby_id_at(0).unwrap(), discord.lobby_metadata(discord.lobby_id_at(0).unwrap(), "p").unwrap(), |discord, result| {
+                let env = getVM().attach_current_thread_permanently().unwrap();
+
+                discord.connect_lobby_voice(result.unwrap().id(), |discord, result| {
+                    let env = getVM().attach_current_thread_permanently().unwrap();
+                    env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "voiceConnected", "()V", &[]);
+                });
+                env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "lobbyMovedPre", "(J)V", &[(result.unwrap().id() as jlong).into()]);
+                env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "lobbyMoved", "()V", &[]);
+            });
+        }
+    });
 }
 
 #[no_mangle]
 pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_getServerList(env: JNIEnv, object: jobject) {
-    println!("Query started");
     getDiscord().lobby_search(&SearchQuery::new()
         .limit(10), |discord, result| {
-        println!("Callback recved");
         if let Err(err) = result {
             println!("{}", err);
-            return;
+            exit(LOBBY_CONNECT_FAILED);
         }
         let env = getVM().attach_current_thread_permanently().unwrap();
         let stringClass = env.find_class("java/lang/String").unwrap();
         let serverList = match env.new_object_array(discord.lobby_count() as i32, stringClass, env.new_string("").unwrap().into_inner()) {
             Err(e) => {
                 println!("Array creation failed");
-                panic!("Creation failed JNI")
-                //exit(JNI_ERROR)
+                exit(JNI_ERROR)
             },
             Ok(l) => l
         };
@@ -143,7 +176,7 @@ pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_getServerLis
             match env.set_object_array_element(serverList, index, env.new_string(lobby.to_string() + "/" + name.as_str()).unwrap()) {
                 Err(e) => {
                     println!("String not valid");
-                    //exit(JNI_ERROR)
+                    exit(JNI_ERROR)
                 },
                 Ok(r) => ()
             };
@@ -152,7 +185,7 @@ pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_getServerLis
         match env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "serverListReloaded", "([Ljava/lang/String;)V", &[serverList.into()]) {
             Err(e) => {
                 println!("Method not found");
-                //exit(JNI_ERROR)
+                exit(JNI_ERROR)
             },
             Ok(r) => ()
         };
