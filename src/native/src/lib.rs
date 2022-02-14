@@ -5,9 +5,9 @@
 #![allow(unused_variables)]
 
 use std::process::exit;
-use discord_game_sdk::{Activity, Discord, EventHandler, SearchQuery};
+use discord_game_sdk::{Activity, Discord, EventHandler, LobbyKind, LobbyTransaction, SearchQuery};
 use jni::{JavaVM, JNIEnv};
-use jni::sys::{jboolean, JNI_FALSE, JNI_TRUE, jobject};
+use jni::sys::{jboolean, jlong, JNI_FALSE, JNI_TRUE, jobject};
 
 //ERROR_CODE
 static NO_DISCORD: i32 = 1;
@@ -39,7 +39,10 @@ fn getDiscord()-> &'static mut Discord<'static,DiscordEvent> {
     return unsafe { match DISCORD
     {
         Some(ref mut n) => n,
-        None => exit(NO_DISCORD)
+        None => {
+            println!("No Discord!!");
+            exit(NO_DISCORD)
+        }
     }};
 }
 
@@ -53,22 +56,16 @@ fn getVM()-> &'static mut JavaVM {
 #[no_mangle]
 pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_initialize(env: JNIEnv, object: jobject) {
     unsafe { VM = Some(env.get_java_vm().unwrap()); }
-    match env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "nativeInitialized", "()V", &[]) {
-        Err(e) => {
-            println!("JNI ERROR");
-            println!("{}", e);
-        },
-        Ok(r) => ()
-    };
+
     unsafe { DISCORD = Some(Discord::new(941752061945581608).unwrap()); }
     getDiscord().update_activity(&Activity::empty()
         .with_state("Test")
         .with_details("와 성공!"), |discord, result| {
-        println!("Callback received");
-        let env = getVM().attach_current_thread_permanently().unwrap();
         if let Err(err) = result {
             exit(ACTIVITY_UPDATE_FAILED);
         }
+        let env = getVM().attach_current_thread_permanently().unwrap();
+        env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "nativeInitialized", "()V", &[]);
     });
     println!("Setup finished: JNI");
 }
@@ -104,14 +101,29 @@ pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_isMuted(env:
 }
 
 #[no_mangle]
+pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_createLobby(env: JNIEnv, object: jobject) {
+    getDiscord().create_lobby(&LobbyTransaction::new()
+        .capacity(10)
+        .kind(LobbyKind::Public)
+        .add_metadata("name".to_string(), "test".to_string()), |discord, result| {
+        let env = getVM().attach_current_thread_permanently().unwrap();
+        env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "lobbyCreated", "(J)V", &[(result.unwrap().id() as jlong).into()]);
+    })
+}
+
+#[no_mangle]
 pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_getServerList(env: JNIEnv, object: jobject) {
-    getDiscord().lobby_search(&SearchQuery::new(), |discord, result| {
+    println!("Query started");
+    getDiscord().lobby_search(&SearchQuery::new()
+        .limit(10), |discord, result| {
+        println!("Callback recved");
         if let Err(err) = result {
-            exit(LOBBY_CONNECT_FAILED);
+            println!("{}", err);
+            return;
         }
         let env = getVM().attach_current_thread_permanently().unwrap();
-        println!("{}", discord.lobby_count());
-        let serverList = match env.new_object_array(discord.lobby_count() as i32, env.find_class("/java/lang/String").unwrap(), env.new_string("").unwrap().into_inner()) {
+        let stringClass = env.find_class("java/lang/String").unwrap();
+        let serverList = match env.new_object_array(discord.lobby_count() as i32, stringClass, env.new_string("").unwrap().into_inner()) {
             Err(e) => {
                 println!("Array creation failed");
                 panic!("Creation failed JNI")
@@ -120,12 +132,14 @@ pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_getServerLis
             Ok(l) => l
         };
         let mut index = 0;
+        println!("{}", discord.lobby_count());
         for x in discord.iter_lobbies() {
             let lobby: i64 = x.unwrap();
             let name: String = match discord.lobby_metadata(lobby, "name") {
                 Err(e) => exit(INVALID_LOBBY),
                 Ok(s) => s
             };
+            println!("{} {}", lobby, name);
             match env.set_object_array_element(serverList, index, env.new_string(lobby.to_string() + "/" + name.as_str()).unwrap()) {
                 Err(e) => {
                     println!("String not valid");
@@ -135,7 +149,7 @@ pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_getServerLis
             };
             index += 1;
         }
-        match env.call_static_method("/me/ddayo/discordmumble/client/discord/DiscordAPI", "serverListReloaded", "([Ljava/lang/String;)V", &[serverList.into()]) {
+        match env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "serverListReloaded", "([Ljava/lang/String;)V", &[serverList.into()]) {
             Err(e) => {
                 println!("Method not found");
                 //exit(JNI_ERROR)

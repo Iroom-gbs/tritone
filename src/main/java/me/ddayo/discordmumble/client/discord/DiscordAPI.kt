@@ -26,14 +26,26 @@ class DiscordAPI {
         @JvmStatic
         fun serverListReloaded(l: Array<String>) {
             for(x in l)
-                logger.info(l);
+                logger.info(x)
         }
 
         //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
         @JvmStatic
         fun nativeInitialized() {
-            //logger.info("Native Initialized")
+            logger.info("Native Initialized")
+            //getServerList()
+            createLobby()
         }
+
+        //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
+        @JvmStatic
+        fun lobbyCreated(lobby: Long) {
+            logger.info("Lobby: $lobby has created")
+            getServerList()
+        }
+
+        @JvmStatic
+        external fun createLobby()
 
         @JvmStatic
         external fun getServerList()
