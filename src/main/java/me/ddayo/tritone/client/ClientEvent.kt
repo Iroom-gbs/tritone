@@ -1,6 +1,6 @@
-package me.ddayo.discordmumble.client
+package me.ddayo.tritone.client
 
-import me.ddayo.discordmumble.client.discord.DiscordAPI
+import me.ddayo.tritone.client.discord.DiscordAPI
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.eventbus.api.SubscribeEvent

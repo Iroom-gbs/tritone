@@ -2,23 +2,24 @@ modLoader="javafml"
 loaderVersion="[36,)"
 license="MIT"
 [[mods]]
-modId="discordmumble"
+modId="tritone"
 version="${file.jarVersion}"
-displayName="Discord mumble"
+displayName="Tritone"
 updateJSONURL="https://github.com/dayo05/discordMumble"
-authors="Dayo" #optional
+authors="Dayo"
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-Discord mumble
+Tritone the distance based volume controller for discord
 '''
-[[dependencies.discordmumble]]
+
+[[dependencies.tritone]]
    modId="forge"
    mandatory=true
    versionRange="[36,)"
    ordering="NONE"
    side="BOTH"
 
-[[dependencies.discordmumble]]
+[[dependencies.tritone]]
    modId="minecraft"
    mandatory=true
    versionRange="[1.16.5,1.17)"

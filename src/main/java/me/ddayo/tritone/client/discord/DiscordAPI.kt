@@ -1,4 +1,4 @@
-package me.ddayo.discordmumble.client.discord
+package me.ddayo.tritone.client.discord
 
 import org.apache.logging.log4j.LogManager
 
@@ -83,5 +83,11 @@ class DiscordAPI {
 
         @JvmStatic
         external fun setVoiceLevel(id: Long, level: Int)
+
+        //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
+        @JvmStatic
+        fun getMCName(): String {
+            return "Testname"
+        }
     }
 }

@@ -1,4 +1,4 @@
-package me.ddayo.discordmumble.client.key
+package me.ddayo.tritone.client.key
 
 import net.minecraft.client.settings.KeyBinding
 

@@ -1,10 +1,7 @@
-package me.ddayo.discordmumble.client
+package me.ddayo.tritone.client
 
-import me.ddayo.discordmumble.client.discord.DiscordAPI
-import me.ddayo.discordmumble.client.key.Key
+import me.ddayo.tritone.client.key.Key
 import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.event.TickEvent.ClientTickEvent
-import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 

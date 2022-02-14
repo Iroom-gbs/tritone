@@ -1,14 +1,14 @@
-package me.ddayo.discordmumble.client.key
+package me.ddayo.tritone.client.key
 
-import me.ddayo.discordmumble.client.discord.DiscordAPI
-import me.ddayo.discordmumble.client.gui.ParticipantGui
-import me.ddayo.discordmumble.client.gui.VoiceChannelListGui
+import me.ddayo.tritone.client.discord.DiscordAPI
+import me.ddayo.tritone.client.gui.ParticipantGui
+import me.ddayo.tritone.client.gui.VoiceChannelListGui
 import net.minecraft.client.settings.KeyBinding
 import net.minecraftforge.event.TickEvent.ClientTickEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
-import me.ddayo.discordmumble.client.util.MinecraftStringUtil.Companion.keyString
-import me.ddayo.discordmumble.client.util.MinecraftStringUtil.Companion.keyDiscordCategory
-import me.ddayo.discordmumble.client.util.MinecraftStringUtil.Companion.keyGuiCategory
+import me.ddayo.tritone.client.util.MinecraftStringUtil.Companion.keyString
+import me.ddayo.tritone.client.util.MinecraftStringUtil.Companion.keyDiscordCategory
+import me.ddayo.tritone.client.util.MinecraftStringUtil.Companion.keyGuiCategory
 import net.minecraft.client.Minecraft
 import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.fml.client.registry.ClientRegistry

@@ -6,7 +6,7 @@
 
 use std::borrow::Borrow;
 use std::process::exit;
-use discord_game_sdk::{Activity, Cast, Comparison, Discord, EventHandler, LobbyKind, LobbyTransaction, SearchQuery};
+use discord_game_sdk::{Activity, Cast, Comparison, Discord, EventHandler, LobbyKind, LobbyMemberTransaction, LobbyTransaction, SearchQuery};
 use jni::{JavaVM, JNIEnv};
 use jni::objects::JString;
 use jni::strings::JavaStr;
@@ -57,7 +57,7 @@ fn getVM()-> &'static mut JavaVM {
 }
 
 #[no_mangle]
-pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_initialize(env: JNIEnv, object: jobject) {
+pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_initialize(env: JNIEnv, object: jobject) {
     unsafe { VM = Some(env.get_java_vm().unwrap()); }
 
     unsafe { DISCORD = Some(Discord::new(941752061945581608).unwrap()); }
@@ -68,13 +68,13 @@ pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_initialize(e
             exit(ACTIVITY_UPDATE_FAILED);
         }
         let env = getVM().attach_current_thread_permanently().unwrap();
-        env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "nativeInitialized", "()V", &[]);
+        env.call_static_method("me/ddayo/tritone/client/discord/DiscordAPI", "nativeInitialized", "()V", &[]);
     });
     println!("Setup finished: JNI");
 }
 
 #[no_mangle]
-pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_tick(env: JNIEnv, object: jobject) {
+pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_tick(env: JNIEnv, object: jobject) {
     match getDiscord().run_callbacks() {
         Err(e) => exit(RUN_CALLBACK_FAILED),
         _ => ()
@@ -82,7 +82,7 @@ pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_tick(env: JN
 }
 
 #[no_mangle]
-pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_setMute(env: JNIEnv, object: jobject) {
+pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_setMute(env: JNIEnv, object: jobject) {
     match getDiscord().set_self_mute(true) {
         Err(e) => exit(CHANGE_MUTE_FAILED),
         _ => ()
@@ -90,7 +90,7 @@ pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_setMute(env:
 }
 
 #[no_mangle]
-pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_setUnmute(env: JNIEnv, object: jobject) {
+pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_setUnmute(env: JNIEnv, object: jobject) {
     match getDiscord().set_self_mute(false) {
         Err(e) => exit(CHANGE_MUTE_FAILED),
         _ => ()
@@ -98,13 +98,17 @@ pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_setUnmute(en
 }
 
 #[no_mangle]
-pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_isMuted(env: JNIEnv, object: jobject)->jboolean {
+pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_isMuted(env: JNIEnv, object: jobject)->jboolean {
 
     return if getDiscord().self_muted().unwrap() { JNI_TRUE } else { JNI_FALSE };
 }
 
+fn get_mc_name(env: &JNIEnv)->String {
+    env.get_string(JString::from(env.call_static_method("me/ddayo/tritone/client/discord/DiscordAPI", "getMCName", "()Ljava/lang/String;", &[]).unwrap().l().unwrap())).unwrap().to_str().unwrap().to_string()
+}
+
 #[no_mangle]
-pub unsafe extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_joinLobby(env: JNIEnv, object: jobject, jlobbyName: JString) {
+pub unsafe extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_joinLobby(env: JNIEnv, object: jobject, jlobbyName: JString) {
     let name = env.get_string(jlobbyName).unwrap().to_str().unwrap().to_string();
     println!("Start query");
     getDiscord().lobby_search(&SearchQuery::new()
@@ -118,17 +122,28 @@ pub unsafe extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_joinL
                 .kind(LobbyKind::Public)
                 .add_metadata("name".to_string(), name.to_string()), |discord, result| {
                 let env = getVM().attach_current_thread_permanently().unwrap();
-                env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "lobbyMovedPre", "(J)V", &[(result.unwrap().id() as jlong).into()]);
+                env.call_static_method("me/ddayo/tritone/client/discord/DiscordAPI", "lobbyMovedPre", "(J)V", &[(result.unwrap().id() as jlong).into()]);
 
                 discord.connect_lobby_voice(result.unwrap().id(), |discord, result| {
                     let env = getVM().attach_current_thread_permanently().unwrap();
-                    env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "voiceConnected", "()V", &[]);
+                    env.call_static_method("me/ddayo/tritone/client/discord/DiscordAPI", "voiceConnected", "()V", &[]);
                 });
 
                 discord.update_lobby(result.unwrap().id(), &LobbyTransaction::new()
                     .add_metadata("p".to_string(), result.unwrap().secret().to_string()), |discord, result| {
                     let env = getVM().attach_current_thread_permanently().unwrap();
-                    env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "lobbyMoved", "()V", &[]);
+                    env.call_static_method("me/ddayo/tritone/client/discord/DiscordAPI", "lobbyMoved", "()V", &[]);
+                });
+
+                discord.update_member(result.unwrap().id(), discord.current_user().unwrap().id(), &LobbyMemberTransaction::new()
+                    .add_metadata("mc".to_string(), get_mc_name(env.borrow())), |discord, result| {
+                    match result {
+                        Err(e) => {
+                            println!("{}", e);
+                            exit(JNI_ERROR);
+                        }
+                        _ => {}
+                    }
                 });
             })
         }
@@ -136,19 +151,30 @@ pub unsafe extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_joinL
             discord.connect_lobby(discord.lobby_id_at(0).unwrap(), discord.lobby_metadata(discord.lobby_id_at(0).unwrap(), "p").unwrap(), |discord, result| {
                 let env = getVM().attach_current_thread_permanently().unwrap();
 
+                discord.update_member(result.unwrap().id(), discord.current_user().unwrap().id(), &LobbyMemberTransaction::new()
+                    .add_metadata("mc".to_string(), get_mc_name(env.borrow())), |discord, result| {
+                    match result {
+                        Err(e) => {
+                            println!("{}", e);
+                            exit(JNI_ERROR);
+                        }
+                        _ => {}
+                    }
+                });
+
                 discord.connect_lobby_voice(result.unwrap().id(), |discord, result| {
                     let env = getVM().attach_current_thread_permanently().unwrap();
-                    env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "voiceConnected", "()V", &[]);
+                    env.call_static_method("me/ddayo/tritone/client/discord/DiscordAPI", "voiceConnected", "()V", &[]);
                 });
-                env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "lobbyMovedPre", "(J)V", &[(result.unwrap().id() as jlong).into()]);
-                env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "lobbyMoved", "()V", &[]);
+                env.call_static_method("me/ddayo/tritone/client/discord/DiscordAPI", "lobbyMovedPre", "(J)V", &[(result.unwrap().id() as jlong).into()]);
+                env.call_static_method("me/ddayo/tritone/client/discord/DiscordAPI", "lobbyMoved", "()V", &[]);
             });
         }
     });
 }
 
 #[no_mangle]
-pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_getServerList(env: JNIEnv, object: jobject) {
+pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_getServerList(env: JNIEnv, object: jobject) {
     getDiscord().lobby_search(&SearchQuery::new()
         .limit(10), |discord, result| {
         if let Err(err) = result {
@@ -182,7 +208,7 @@ pub extern fn Java_me_ddayo_discordmumble_client_discord_DiscordAPI_getServerLis
             };
             index += 1;
         }
-        match env.call_static_method("me/ddayo/discordmumble/client/discord/DiscordAPI", "serverListReloaded", "([Ljava/lang/String;)V", &[serverList.into()]) {
+        match env.call_static_method("me/ddayo/tritone/client/discord/DiscordAPI", "serverListReloaded", "([Ljava/lang/String;)V", &[serverList.into()]) {
             Err(e) => {
                 println!("Method not found");
                 exit(JNI_ERROR)
