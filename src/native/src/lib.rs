@@ -6,7 +6,7 @@
 
 use std::borrow::Borrow;
 use std::process::exit;
-use discord_game_sdk::{Activity, Cast, Comparison, Discord, EventHandler, LobbyKind, LobbyMemberTransaction, LobbyTransaction, SearchQuery};
+use discord_game_sdk::{Action, Activity, Cast, Comparison, Discord, Entitlement, EventHandler, LobbyID, LobbyKind, LobbyMemberTransaction, LobbyTransaction, NetworkChannelID, NetworkPeerID, Relationship, SearchQuery, User, UserAchievement, UserID};
 use jni::{JavaVM, JNIEnv};
 use jni::objects::JString;
 use jni::strings::JavaStr;
@@ -26,7 +26,15 @@ struct DiscordEvent {
 }
 
 impl EventHandler for DiscordEvent {
+    fn on_member_update(&mut self, discord: &Discord<'_, Self>, lobby_id: LobbyID, member_id: UserID) {
+        println!("Member update called");
+        let env = getVM().attach_current_thread_permanently().unwrap();
 
+        let mcName = discord.lobby_member_metadata(lobby_id, member_id, "mc");
+        if mcName.is_ok() {
+            env.call_static_method(DISCORD_API_CLASS, "addVoicePlayer", "(Ljava/lang/String;J)V", &[env.new_string(mcName.unwrap()).unwrap().into(), (member_id as jlong).into()]);
+        }
+    }
 }
 
 impl Default for DiscordEvent {
@@ -62,7 +70,11 @@ fn getVM()-> &'static mut JavaVM {
 pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_initialize(env: JNIEnv, object: jobject) {
     unsafe { VM = Some(env.get_java_vm().unwrap()); }
 
-    unsafe { DISCORD = Some(Discord::new(941752061945581608).unwrap()); }
+    unsafe {
+        let mut d = Discord::new(941752061945581608).unwrap();
+        *d.event_handler_mut() = Some(DiscordEvent::default());
+        DISCORD = Some(d);
+    }
     getDiscord().update_activity(&Activity::empty()
         .with_state("Test")
         .with_details("와 성공!"), |discord, result| {

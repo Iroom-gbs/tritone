@@ -102,9 +102,10 @@ class DiscordAPI {
         fun addVoicePlayer(name: String, id: Long) {
             logger.info("$name with $id added")
             voicePlayerList[name] = id
-            setVoiceLevel(id, 0) //mute by default
+            setVoiceLevel(id, 200) //mute by default
         }
 
+        //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
         @JvmStatic
         fun clearVoicePlayerList() {
             logger.info("cleared")
