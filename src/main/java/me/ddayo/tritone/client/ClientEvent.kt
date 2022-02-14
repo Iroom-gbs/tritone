@@ -1,6 +1,7 @@
 package me.ddayo.tritone.client
 
 import me.ddayo.tritone.client.discord.DiscordAPI
+import me.ddayo.tritone.client.util.MathUtil
 import net.minecraft.client.Minecraft
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderPlayerEvent
@@ -11,9 +12,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent
 import org.apache.logging.log4j.LogManager
 
 class ClientEvent {
-    companion object {
-        val logger = LogManager.getLogger()
-    }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     fun onRender(event: RenderGameOverlayEvent.Pre) {
@@ -21,12 +19,13 @@ class ClientEvent {
         for(x in Minecraft.getInstance().world?.players!!)
             if(cloned.contains(x.name.string)) {
                 cloned.remove(x.name.string)
-                //TODO: control vol
+                DiscordAPI.setVoiceLevel(DiscordAPI.voicePlayerList[x.name.string]!!, MathUtil.getVolume(MathUtil.getDistance(x.positionVec)))
             }
             else if(DiscordAPI.voicePlayerList.containsKey(x.name.string)) {
                 DiscordAPI.managedPlayer.add(x.name.string)
-                //TODO: control vol
+                DiscordAPI.setVoiceLevel(DiscordAPI.voicePlayerList[x.name.string]!!, MathUtil.getVolume(MathUtil.getDistance(x.positionVec)))
             }
+
         for(p in cloned)
             DiscordAPI.setVoiceLevel(DiscordAPI.voicePlayerList[p]!!, 0)
         DiscordAPI.managedPlayer.removeAll(cloned)
