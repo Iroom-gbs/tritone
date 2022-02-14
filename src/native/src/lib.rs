@@ -118,7 +118,6 @@ pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_isMuted(env: JNIEn
 }
 
 fn get_mc_name(env: &JNIEnv)->String {
-    //return "Testname".to_string();
     env.get_string(JString::from(env.call_static_method(DISCORD_API_CLASS, "getMCName", "()Ljava/lang/String;", &[]).unwrap().l().unwrap())).unwrap().to_str().unwrap().to_string()
 }
 

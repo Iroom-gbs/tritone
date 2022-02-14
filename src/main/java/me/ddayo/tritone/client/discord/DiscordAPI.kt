@@ -111,5 +111,7 @@ class DiscordAPI {
             logger.info("cleared")
             voicePlayerList.clear()
         }
+
+        val managedPlayer = emptySet<String>().toMutableSet()
     }
 }
