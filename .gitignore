@@ -120,5 +120,5 @@ run/
 
 # Added by cargo
 
-/target
-Cargo.lock
+src/native/target
+src/native/Cargo.lock
