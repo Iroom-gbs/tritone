@@ -39,8 +39,11 @@ class Key {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     fun onClientTick(event: ClientTickEvent) {
-        if(openParticipantGui.isKeyDown)
-            Minecraft.getInstance().displayGuiScreen(ParticipantGui())
+        if(openParticipantGui.isKeyDown) {
+            //Minecraft.getInstance().displayGuiScreen(ParticipantGui())
+
+            DiscordAPI.joinLobby("kkkk")
+        }
 
         if(openVoiceChannelGui.isKeyDown)
             Minecraft.getInstance().displayGuiScreen(VoiceChannelListGui())

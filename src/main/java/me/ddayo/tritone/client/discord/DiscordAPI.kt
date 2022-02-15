@@ -1,5 +1,6 @@
 package me.ddayo.tritone.client.discord
 
+import net.minecraft.client.Minecraft
 import org.apache.logging.log4j.LogManager
 
 
@@ -39,7 +40,6 @@ class DiscordAPI {
         @JvmStatic
         fun nativeInitialized() {
             logger.info("Native Initialized")
-            joinLobby("kkkk")
         }
 
         @JvmStatic
@@ -92,7 +92,7 @@ class DiscordAPI {
         //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
         @JvmStatic
         fun getMCName(): String {
-            return "Testname"
+            return Minecraft.getInstance().player!!.uniqueID.toString()
         }
 
         val voicePlayerList = emptyMap<String, Long>().toMutableMap()
@@ -102,7 +102,7 @@ class DiscordAPI {
         fun addVoicePlayer(name: String, id: Long) {
             logger.info("$name with $id added")
             voicePlayerList[name] = id
-            setVoiceLevel(id, 200) //mute by default
+            setVoiceLevel(id, 0) //mute by default
         }
 
         //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!

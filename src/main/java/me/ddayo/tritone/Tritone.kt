@@ -6,10 +6,12 @@ import net.minecraftforge.common.MinecraftForge
 import me.ddayo.tritone.Tritone.Companion.MOD_ID
 import me.ddayo.tritone.client.ClientFMLEvent
 import me.ddayo.tritone.client.discord.DiscordAPI
+import net.minecraft.client.Minecraft
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent
 import net.minecraftforge.fml.common.Mod
 import org.apache.logging.log4j.LogManager
+import java.io.File
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(MOD_ID)
@@ -21,8 +23,10 @@ class Tritone {
     }
 
     init {
-        System.loadLibrary("discord_game_sdk")
-        System.loadLibrary("native")
+        //System.loadLibrary("discord_game_sdk")
+        //System.loadLibrary("native")
+        System.load(File(Minecraft.getInstance().gameDir, "discord_game_sdk.dll").canonicalPath)
+        System.load(File(Minecraft.getInstance().gameDir, "native.dll").canonicalPath)
         DiscordAPI.initialize()
         FMLJavaModLoadingContext.get().modEventBus.addListener { event: FMLCommonSetupEvent -> setup(event) }
         MinecraftForge.EVENT_BUS.register(this)

@@ -21,7 +21,7 @@ static CHANGE_MUTE_FAILED: i32 = 5;
 static INVALID_LOBBY: i32 = 6;
 static JNI_ERROR: i32 = 7;
 
-struct DiscordEvent {
+pub struct DiscordEvent {
 
 }
 
@@ -123,9 +123,26 @@ fn get_mc_name(env: &JNIEnv)->String {
 
 #[no_mangle]
 pub unsafe extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_joinLobby(env: JNIEnv, object: jobject, jlobbyName: JString) {
+    let cl = env.get_static_field(DISCORD_API_CLASS, "currentLobby", "J").unwrap().j().unwrap();
+
     let name = env.get_string(jlobbyName).unwrap().to_str().unwrap().to_string();
+    if cl == 0 {
+        tryJoin(name, getDiscord());
+    }
+    else {
+        getDiscord().disconnect_lobby(cl, move|discord, result| {
+            // Disconnect first.
+            println!("Disconnect");
+            let env = getVM().attach_current_thread_permanently().unwrap();
+            env.set_static_field(DISCORD_API_CLASS, env.get_static_field_id(DISCORD_API_CLASS, "currentLobby", "J").unwrap(), (0 as jlong).into());
+            tryJoin(name, discord);
+        });
+    }
+}
+
+pub unsafe fn tryJoin(name: String, discord: &Discord<DiscordEvent>) {
     println!("Start query");
-    getDiscord().lobby_search(&SearchQuery::new()
+    discord.lobby_search(&SearchQuery::new()
         .filter("metadata.name".to_string(), Comparison::Equal, name.to_string(), Cast::String)
         .limit(10), move |discord, result| {
 
@@ -136,6 +153,10 @@ pub unsafe extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_joinLobby(e
                 .kind(LobbyKind::Public)
                 .add_metadata("name".to_string(), name.to_string()), |discord, result| {
                 let env = getVM().attach_current_thread_permanently().unwrap();
+                match result {
+                    Err(e) => println!("{}", e),
+                    Ok(r) => println!("{}", r.id())
+                };
                 env.call_static_method(DISCORD_API_CLASS, "lobbyMovedPre", "(J)V", &[(result.unwrap().id() as jlong).into()]);
                 env.call_static_method(DISCORD_API_CLASS, "clearVoicePlayerList", "()V", &[]);
 
@@ -243,7 +264,7 @@ pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_getServerList(env:
 
 #[no_mangle]
 pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_setVoiceLevel(env: JNIEnv, object: jobject, uid: jlong, level: jint) {
-    println!("V: {} {}", uid, level as u8);
+    //println!("V: {} {}", uid, level as u8);
     match getDiscord().set_local_volume(uid, level as u8) {
         Err(e) => {
             println!("{}", e);
