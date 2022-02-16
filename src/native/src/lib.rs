@@ -68,11 +68,12 @@ fn getVM()-> &'static mut JavaVM {
 }
 
 #[no_mangle]
-pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_initialize(env: JNIEnv, object: jobject) {
+pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_initialize(env: JNIEnv, object: jobject, clientKey: jlong) {
     unsafe { VM = Some(env.get_java_vm().unwrap()); }
 
     unsafe {
-        let mut d = Discord::new(941752061945581608).unwrap();
+        //941752061945581608
+        let mut d = Discord::new(clientKey).unwrap();
         *d.event_handler_mut() = Some(DiscordEvent::default());
         DISCORD = Some(d);
     }

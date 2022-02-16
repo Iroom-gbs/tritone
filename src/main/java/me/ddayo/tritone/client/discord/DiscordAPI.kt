@@ -16,7 +16,7 @@ class DiscordAPI {
         val logger = LogManager.getLogger()
 
         @JvmStatic
-        external fun initialize()
+        external fun initialize(clientKey: Long)
 
         @JvmStatic
         external fun tick()

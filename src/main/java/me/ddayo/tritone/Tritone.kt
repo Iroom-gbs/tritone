@@ -21,6 +21,7 @@ class Tritone {
         // Directly reference a log4j logger.
         private val logger = LogManager.getLogger()
         const val MOD_ID = "tritone"
+        const val CLIENT_KEY = 941752061945581608
     }
 
     init {
@@ -30,14 +31,13 @@ class Tritone {
             System.load(File(Minecraft.getInstance().gameDir, "mods/discord_game_sdk.dll").canonicalPath)
             System.load(File(Minecraft.getInstance().gameDir, "mods/native.dll").canonicalPath)
         }
-        if(SystemUtils.IS_OS_LINUX) {
+        else if(SystemUtils.IS_OS_LINUX) {
             System.load(File(Minecraft.getInstance().gameDir, "mods/discord_game_sdk.so").canonicalPath)
             System.load(File(Minecraft.getInstance().gameDir, "mods/native.so").canonicalPath)
         }
-        else {
-            throw IllegalStateException("Not supported OS")
-        }
-        DiscordAPI.initialize()
+        else throw IllegalStateException("Not supported OS")
+
+        DiscordAPI.initialize(CLIENT_KEY)
         FMLJavaModLoadingContext.get().modEventBus.addListener { event: FMLCommonSetupEvent -> setup(event) }
         MinecraftForge.EVENT_BUS.register(this)
         FMLJavaModLoadingContext.get().modEventBus.register(ClientFMLEvent())
