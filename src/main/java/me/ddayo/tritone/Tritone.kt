@@ -25,15 +25,15 @@ class Tritone {
         // Directly reference a log4j logger.
         private val logger = LogManager.getLogger()
         const val MOD_ID = "tritone"
-        val configFile = File(Minecraft.getInstance().gameDir, "config/tritone.json")
+        val configFile = File(Minecraft.getInstance().gameDir, "mods/tritone/config.json")
         val config = if(configFile.exists()) Gson().fromJson(FileReader(configFile), Config::class.java) else Config()
         val CLIENT_KEY = config.clientId
     }
 
     init {
         if(SystemUtils.IS_OS_WINDOWS) {
-            System.load(File(Minecraft.getInstance().gameDir, "mods/discord_game_sdk.dll").canonicalPath)
-            System.load(File(Minecraft.getInstance().gameDir, "mods/native.dll").canonicalPath)
+            System.load(File(Minecraft.getInstance().gameDir, "mods/tritone/discord_game_sdk.dll").canonicalPath)
+            System.load(File(Minecraft.getInstance().gameDir, "mods/tritone/native.dll").canonicalPath)
         }
         else if(SystemUtils.IS_OS_LINUX) {
             System.load(File(Minecraft.getInstance().gameDir, "mods/discord_game_sdk.so").canonicalPath)
