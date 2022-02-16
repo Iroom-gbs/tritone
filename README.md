@@ -2,7 +2,7 @@
 
 # 🔉TRITONE
 **Minecraft in-game prioximity voice chatting mod via discord-game-sdk.**<br>
-Download: [Windows 1.16.5](https://github.com/Iroom-gbs/tritone/releases/download/beta/tritone-windows.zip)
+Download: [Windows 1.16.5](https://github.com/Iroom-gbs/tritone/releases)
 
 This README.md was written by a non-English speaking person, so it might be awkward. Help us with PR!
 
