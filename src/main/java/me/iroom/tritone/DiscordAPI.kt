@@ -1,9 +1,8 @@
-package me.ddayo.tritone.client.discord
+package me.iroom.tritone
 
 import net.minecraft.client.Minecraft
 import net.minecraft.util.text.StringTextComponent
 import org.apache.logging.log4j.LogManager
-
 
 /***************************************
                  Warning
@@ -115,5 +114,7 @@ class DiscordAPI {
         }
 
         val managedPlayer = emptySet<String>().toMutableSet()
+
+        val userVolume = emptyMap<Long, Int>().toMutableMap()
     }
 }

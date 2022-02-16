@@ -47,7 +47,7 @@ impl Default for DiscordEvent {
 static mut DISCORD : Option<Discord<DiscordEvent>> = Option::None;
 static mut VM: Option<JavaVM> = Option::None;
 
-const DISCORD_API_CLASS: &str = "me/ddayo/tritone/client/discord/DiscordAPI";
+const DISCORD_API_CLASS: &str = "me/iroom/tritone/DiscordAPI";
 
 fn getDiscord()-> &'static mut Discord<'static,DiscordEvent> {
     return unsafe { match DISCORD
@@ -68,7 +68,7 @@ fn getVM()-> &'static mut JavaVM {
 }
 
 #[no_mangle]
-pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_initialize(env: JNIEnv, object: jobject, clientKey: jlong) {
+pub extern fn Java_me_iroom_tritone_DiscordAPI_initialize(env: JNIEnv, object: jobject, clientKey: jlong) {
     unsafe { VM = Some(env.get_java_vm().unwrap()); }
 
     unsafe {
@@ -84,13 +84,13 @@ pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_initialize(env: JN
             exit(ACTIVITY_UPDATE_FAILED);
         }
         let env = getVM().attach_current_thread_permanently().unwrap();
-        env.call_static_method("me/ddayo/tritone/client/discord/DiscordAPI", "nativeInitialized", "()V", &[]);
+        env.call_static_method(DISCORD_API_CLASS, "nativeInitialized", "()V", &[]);
     });
     println!("Setup finished: JNI");
 }
 
 #[no_mangle]
-pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_tick(env: JNIEnv, object: jobject) {
+pub extern fn Java_me_iroom_tritone_DiscordAPI_tick(env: JNIEnv, object: jobject) {
     match getDiscord().run_callbacks() {
         Err(e) => println!("{}", e),//exit(RUN_CALLBACK_FAILED),
         _ => ()
@@ -98,7 +98,7 @@ pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_tick(env: JNIEnv, 
 }
 
 #[no_mangle]
-pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_setMute(env: JNIEnv, object: jobject) {
+pub extern fn Java_me_iroom_tritone_DiscordAPI_setMute(env: JNIEnv, object: jobject) {
     match getDiscord().set_self_mute(true) {
         Err(e) => exit(CHANGE_MUTE_FAILED),
         _ => ()
@@ -106,7 +106,7 @@ pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_setMute(env: JNIEn
 }
 
 #[no_mangle]
-pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_setUnmute(env: JNIEnv, object: jobject) {
+pub extern fn Java_me_iroom_tritone_DiscordAPI_setUnmute(env: JNIEnv, object: jobject) {
     match getDiscord().set_self_mute(false) {
         Err(e) => exit(CHANGE_MUTE_FAILED),
         _ => ()
@@ -114,7 +114,7 @@ pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_setUnmute(env: JNI
 }
 
 #[no_mangle]
-pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_isMuted(env: JNIEnv, object: jobject)->jboolean {
+pub extern fn Java_me_iroom_tritone_DiscordAPI_isMuted(env: JNIEnv, object: jobject)->jboolean {
 
     return if getDiscord().self_muted().unwrap() { JNI_TRUE } else { JNI_FALSE };
 }
@@ -124,7 +124,7 @@ fn get_mc_name(env: &JNIEnv)->String {
 }
 
 #[no_mangle]
-pub unsafe extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_joinLobby(env: JNIEnv, object: jobject, jlobbyName: JString) {
+pub unsafe extern fn Java_me_iroom_tritone_DiscordAPI_joinLobby(env: JNIEnv, object: jobject, jlobbyName: JString) {
     let cl = env.get_static_field(DISCORD_API_CLASS, "currentLobby", "J").unwrap().j().unwrap();
 
     let name = env.get_string(jlobbyName).unwrap().to_str().unwrap().to_string();
@@ -236,7 +236,7 @@ pub unsafe fn tryJoin(name: String, discord: &Discord<DiscordEvent>) {
 }
 
 #[no_mangle]
-pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_getServerList(env: JNIEnv, object: jobject) {
+pub extern fn Java_me_iroom_tritone_DiscordAPI_getServerList(env: JNIEnv, object: jobject) {
     getDiscord().lobby_search(&SearchQuery::new()
         .limit(10), |discord, result| {
         if let Err(err) = result {
@@ -281,7 +281,7 @@ pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_getServerList(env:
 }
 
 #[no_mangle]
-pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_setVoiceLevel(env: JNIEnv, object: jobject, uid: jlong, level: jint) {
+pub extern fn Java_me_iroom_tritone_DiscordAPI_setVoiceLevel(env: JNIEnv, object: jobject, uid: jlong, level: jint) {
     //println!("V: {} {}", uid, level as u8);
     match getDiscord().set_local_volume(uid, level as u8) {
         Err(e) => {

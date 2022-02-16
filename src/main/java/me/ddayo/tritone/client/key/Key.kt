@@ -1,6 +1,6 @@
 package me.ddayo.tritone.client.key
 
-import me.ddayo.tritone.client.discord.DiscordAPI
+import me.iroom.tritone.DiscordAPI
 import me.ddayo.tritone.client.gui.ParticipantGui
 import me.ddayo.tritone.client.gui.VoiceChannelListGui
 import net.minecraft.client.settings.KeyBinding

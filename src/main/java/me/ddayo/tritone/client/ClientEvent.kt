@@ -1,6 +1,6 @@
 package me.ddayo.tritone.client
 
-import me.ddayo.tritone.client.discord.DiscordAPI
+import me.iroom.tritone.DiscordAPI
 import me.ddayo.tritone.client.util.MathUtil
 import net.minecraft.client.Minecraft
 import net.minecraftforge.client.event.RenderGameOverlayEvent
