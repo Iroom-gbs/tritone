@@ -1,7 +1,6 @@
 package me.ddayo.tritone.client.key
 
 import me.iroom.tritone.DiscordAPI
-import me.ddayo.tritone.client.gui.ParticipantGui
 import me.ddayo.tritone.client.gui.VoiceChannelListGui
 import net.minecraft.client.settings.KeyBinding
 import net.minecraftforge.event.TickEvent.ClientTickEvent
@@ -21,7 +20,7 @@ class Key {
         private val openParticipantGui = OptionKey(keyString("participateGui"), GLFW.GLFW_KEY_O, keyGuiCategory)
         private val openVoiceChannelGui = OptionKey(keyString("voiceChannelGui"), GLFW.GLFW_KEY_V, keyGuiCategory)
         private val muteKey = OptionKey(keyString("mute"), GLFW.GLFW_KEY_M, keyDiscordCategory)
-        private val muteInputKey = OptionKey(keyString("muteInput"), GLFW.GLFW_KEY_I, keyDiscordCategory)
+        private val deafKey = OptionKey(keyString("muteInput"), GLFW.GLFW_KEY_I, keyDiscordCategory)
         private var initialized = false
 
         fun registerKeys() {
@@ -31,7 +30,7 @@ class Key {
             keys.add(openParticipantGui)
             keys.add(openVoiceChannelGui)
             keys.add(muteKey)
-            keys.add(muteInputKey)
+            keys.add(deafKey)
             for(k in keys)
                 ClientRegistry.registerKeyBinding(k)
         }
@@ -51,7 +50,7 @@ class Key {
         if(muteKey.isKeyDown)
             DiscordAPI.inverseMuteStatus()
 
-        if(muteInputKey.isKeyDown)
-            DiscordAPI.inverseInputMuteStatus()
+        if(deafKey.isKeyDown)
+            DiscordAPI.inverseDeafStatus()
     }
 }

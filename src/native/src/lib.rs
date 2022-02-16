@@ -115,8 +115,28 @@ pub extern fn Java_me_iroom_tritone_DiscordAPI_setUnmute(env: JNIEnv, object: jo
 
 #[no_mangle]
 pub extern fn Java_me_iroom_tritone_DiscordAPI_isMuted(env: JNIEnv, object: jobject)->jboolean {
-
     return if getDiscord().self_muted().unwrap() { JNI_TRUE } else { JNI_FALSE };
+}
+
+#[no_mangle]
+pub extern fn Java_me_iroom_tritone_DiscordAPI_setDeafened(env: JNIEnv, object: jobject) {
+    match getDiscord().set_self_deaf(true) {
+        Err(e) => exit(CHANGE_MUTE_FAILED),
+        _ => ()
+    }
+}
+
+#[no_mangle]
+pub extern fn Java_me_iroom_tritone_DiscordAPI_setUndeafened(env: JNIEnv, object: jobject) {
+    match getDiscord().set_self_deaf(false) {
+        Err(e) => exit(CHANGE_MUTE_FAILED),
+        _ => ()
+    }
+}
+
+#[no_mangle]
+pub extern fn Java_me_iroom_tritone_DiscordAPI_isDeafened(env: JNIEnv, object: jobject)->jboolean {
+    return if getDiscord().self_deafened().unwrap() {JNI_TRUE} else {JNI_FALSE}
 }
 
 fn get_mc_name(env: &JNIEnv)->String {

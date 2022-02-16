@@ -26,8 +26,6 @@ class Tritone {
     }
 
     init {
-        //System.loadLibrary("discord_game_sdk")
-        //System.loadLibrary("native")
         if(SystemUtils.IS_OS_WINDOWS) {
             System.load(File(Minecraft.getInstance().gameDir, "mods/discord_game_sdk.dll").canonicalPath)
             System.load(File(Minecraft.getInstance().gameDir, "mods/native.dll").canonicalPath)

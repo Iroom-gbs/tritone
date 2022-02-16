@@ -82,20 +82,20 @@ class DiscordAPI {
         external fun getServerList()
 
         @JvmStatic
-        external fun isInputMuted(): Boolean
+        external fun isDeafened(): Boolean
 
         @JvmStatic
-        private external fun setInputMute()
+        private external fun setDeafened()
 
         @JvmStatic
-        private external fun setInputUnmute()
+        private external fun setUndeafened()
 
         fun inverseMuteStatus() {
             LogManager.getLogger().info(isMuted())
             if(isMuted()) setUnmute() else setMute()
         }
 
-        fun inverseInputMuteStatus() = if(isInputMuted()) setInputUnmute() else setInputMute()
+        fun inverseDeafStatus() = if(isDeafened()) setUndeafened() else setDeafened()
 
         @JvmStatic
         private external fun setVoiceLevel(id: Long, level: Int)
