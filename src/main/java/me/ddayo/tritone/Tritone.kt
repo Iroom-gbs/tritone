@@ -5,6 +5,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.common.MinecraftForge
 import me.ddayo.tritone.Tritone.Companion.MOD_ID
 import me.ddayo.tritone.client.ClientFMLEvent
+import me.ddayo.tritone.client.discord.ForgeDiscordEvent
 import me.iroom.tritone.DiscordAPI
 import net.minecraft.client.Minecraft
 import net.minecraftforge.eventbus.api.SubscribeEvent
@@ -37,7 +38,7 @@ class Tritone {
         }
         else throw IllegalStateException("Not supported OS")
 
-        DiscordAPI.initialize(CLIENT_KEY)
+        DiscordAPI.initialize(CLIENT_KEY, ForgeDiscordEvent())
         FMLJavaModLoadingContext.get().modEventBus.register(ClientFMLEvent())
     }
 }

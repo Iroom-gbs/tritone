@@ -1,7 +1,7 @@
 package me.iroom.tritone
 
-import net.minecraft.client.Minecraft
-import net.minecraft.util.text.StringTextComponent
+import me.iroom.tritone.util.MathUtil
+import me.iroom.tritone.util.Vector3D
 import org.apache.logging.log4j.LogManager
 
 /***************************************
@@ -12,10 +12,17 @@ import org.apache.logging.log4j.LogManager
 
 class DiscordAPI {
     companion object {
+        lateinit var event: DiscordEvent
+
+        public fun initialize(clientKey: Long, event: DiscordEvent) {
+            this.event = event
+            initialize(clientKey)
+        }
+
         val logger = LogManager.getLogger()
 
         @JvmStatic
-        external fun initialize(clientKey: Long)
+        private external fun initialize(clientKey: Long)
 
         @JvmStatic
         external fun tick()
@@ -32,6 +39,7 @@ class DiscordAPI {
         //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
         @JvmStatic
         fun serverListReloaded(l: Array<String>) {
+            event.serverListReloaded(l)
             for(x in l)
                 logger.info(x)
         }
@@ -39,6 +47,7 @@ class DiscordAPI {
         //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
         @JvmStatic
         fun nativeInitialized() {
+            event.nativeInitialized()
             logger.info("Native Initialized")
         }
 
@@ -54,13 +63,14 @@ class DiscordAPI {
         //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
         @JvmStatic
         fun voiceConnected() {
-            Minecraft.getInstance().player?.sendMessage(StringTextComponent("음성채팅에 연결되었습니다!"), Minecraft.getInstance().player?.uniqueID)
+            event.voiceConnected()
             logger.info("Voice connected")
         }
 
         //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
         @JvmStatic
         fun lobbyMoved() {
+            event.lobbyMoved(currentLobby)
             logger.info("Lobby: $currentLobby has moved")
             getServerList()
         }
@@ -88,12 +98,20 @@ class DiscordAPI {
         fun inverseInputMuteStatus() = if(isInputMuted()) setInputUnmute() else setInputMute()
 
         @JvmStatic
-        external fun setVoiceLevel(id: Long, level: Int)
+        private external fun setVoiceLevel(id: Long, level: Int)
+
+        fun setVolume(id: Long, player: Vector3D, other: Vector3D) {
+            if(!userVolume.containsKey(id))
+                userVolume[id] = 100
+            setVoiceLevel(id, (MathUtil.getVolume(MathUtil.getDistance(player, other)) * userVolume[id]!!).toInt())
+        }
+
+        fun setVolumeZero(id: Long) = setVoiceLevel(id, 0)
 
         //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
         @JvmStatic
         fun getMCName(): String {
-            return Minecraft.getInstance().player!!.uniqueID.toString()
+            return event.getMCName()//Minecraft.getInstance().player!!.uniqueID.toString()
         }
 
         val voicePlayerList = emptyMap<String, Long>().toMutableMap()
@@ -101,6 +119,7 @@ class DiscordAPI {
         //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
         @JvmStatic
         fun addVoicePlayer(name: String, id: Long) {
+            event.addVoicePlayer(name, id)
             logger.info("$name with $id added")
             voicePlayerList[name] = id
             setVoiceLevel(id, 0) //mute by default
@@ -109,6 +128,7 @@ class DiscordAPI {
         //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
         @JvmStatic
         fun clearVoicePlayerList() {
+            event.clearVoicePlayerList()
             logger.info("cleared")
             voicePlayerList.clear()
         }

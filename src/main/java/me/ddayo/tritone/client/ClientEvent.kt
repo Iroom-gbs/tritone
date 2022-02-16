@@ -1,7 +1,8 @@
 package me.ddayo.tritone.client
 
 import me.iroom.tritone.DiscordAPI
-import me.ddayo.tritone.client.util.MathUtil
+import me.iroom.tritone.util.MathUtil
+import me.iroom.tritone.util.Vector3D
 import net.minecraft.client.Minecraft
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderPlayerEvent
@@ -23,23 +24,20 @@ class ClientEvent {
             val cloned = HashSet<String>(DiscordAPI.managedPlayer).toMutableSet()
             for (x in Minecraft.getInstance().world?.players!!) {
                 if(x.uniqueID == Minecraft.getInstance().player!!.uniqueID) continue
-                //logger.info(x.position)
-                //logger.info(x.uniqueID.toString())
-                //logger.info(MathUtil.getVolume(MathUtil.getDistance(x.positionVec)))
+                val p = Minecraft.getInstance().player!!.positionVec
+                val o = x.positionVec
+
                 if (cloned.contains(x.uniqueID.toString())) {
                     cloned.remove(x.uniqueID.toString())
-                    Minecraft.getInstance().player!!.sendChatMessage("DEBUG: Calculated volume of ${x.name.string} is ${MathUtil.getVolume(MathUtil.getDistance(x.positionVec))}")
-                    //logger.info(MathUtil.getVolume(MathUtil.getDistance(x.positionVec)))
-                    DiscordAPI.setVoiceLevel(DiscordAPI.voicePlayerList[x.uniqueID.toString()]!!, MathUtil.getVolume(MathUtil.getDistance(x.positionVec)))
+                    DiscordAPI.setVolume(DiscordAPI.voicePlayerList[x.uniqueID.toString()]!!, Vector3D(p.x, p.y, p.z), Vector3D(o.x, o.y, o.z))
                 } else if (DiscordAPI.voicePlayerList.containsKey(x.uniqueID.toString())) {
-                    Minecraft.getInstance().player!!.sendChatMessage("DEBUG: Calculated volume of ${x.name.string} is ${MathUtil.getVolume(MathUtil.getDistance(x.positionVec))}")
                     DiscordAPI.managedPlayer.add(x.uniqueID.toString())
-                    DiscordAPI.setVoiceLevel(DiscordAPI.voicePlayerList[x.uniqueID.toString()]!!, MathUtil.getVolume(MathUtil.getDistance(x.positionVec)))
+                    DiscordAPI.setVolume(DiscordAPI.voicePlayerList[x.uniqueID.toString()]!!, Vector3D(p.x, p.y, p.z), Vector3D(o.x, o.y, o.z))
                 }
             }
 
             for (p in cloned)
-                DiscordAPI.setVoiceLevel(DiscordAPI.voicePlayerList[p]!!, 0)
+                DiscordAPI.setVolumeZero(DiscordAPI.voicePlayerList[p]!!)
             DiscordAPI.managedPlayer.removeAll(cloned)
         }
     }
