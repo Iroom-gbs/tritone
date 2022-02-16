@@ -31,8 +31,10 @@ class Tritone {
             System.load(File(Minecraft.getInstance().gameDir, "mods/native.dll").canonicalPath)
         }
         else if(SystemUtils.IS_OS_LINUX) {
-            System.load(File(Minecraft.getInstance().gameDir, "mods/libdiscord_game_sdk.so").canonicalPath)
+            System.load(File(Minecraft.getInstance().gameDir, "mods/discord_game_sdk.so").canonicalPath)
             System.load(File(Minecraft.getInstance().gameDir, "mods/libnative.so").canonicalPath)
+            System.load(File(Minecraft.getInstance().gameDir, "mods/libdiscord_game_sdk.so").canonicalPath)
+            System.load(File(Minecraft.getInstance().gameDir, "mods/native.so").canonicalPath)
         }
         else throw IllegalStateException("Not supported OS")
 

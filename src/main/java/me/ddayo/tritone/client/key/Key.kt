@@ -49,10 +49,19 @@ class Key {
         if(openVoiceChannelGui.isKeyDown)
             Minecraft.getInstance().displayGuiScreen(VoiceChannelListGui())
 
-        if(muteKey.isKeyDown)
+        if(muteKey.isKeyDown) {
             DiscordAPI.inverseMuteStatus()
+            if(DiscordAPI.isMuted())
+                Minecraft.getInstance().player!!.sendMessage(StringTextComponent("음소거되었습니다."), Minecraft.getInstance().player!!.uniqueID)
+            else Minecraft.getInstance().player!!.sendMessage(StringTextComponent("음소거 해제되었습니다."), Minecraft.getInstance().player!!.uniqueID)
+        }
 
-        if(deafKey.isKeyDown)
+        if(deafKey.isKeyDown) {
             DiscordAPI.inverseDeafStatus()
+
+            if(DiscordAPI.isMuted())
+                Minecraft.getInstance().player!!.sendMessage(StringTextComponent("해드셋 음소거 되었습니다."), Minecraft.getInstance().player!!.uniqueID)
+            else Minecraft.getInstance().player!!.sendMessage(StringTextComponent("헤드셋 음소거 해제되었습니다."), Minecraft.getInstance().player!!.uniqueID)
+        }
     }
 }

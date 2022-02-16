@@ -5,7 +5,7 @@ import kotlin.math.pow
 class MathUtil {
     companion object {
         fun getDistance(p: Vector3D, o: Vector3D): Double {
-            return ((p.x - o.x).pow(20) + (p.y - o.y).pow(2) + (p.z - o.z).pow(2)).pow(0.5)
+            return ((p.x - o.x).pow(2) + (p.y - o.y).pow(2) + (p.z - o.z).pow(2)).pow(0.5)
         }
 
         private const val PRESET = 4

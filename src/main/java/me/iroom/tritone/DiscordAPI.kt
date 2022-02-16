@@ -111,7 +111,7 @@ class DiscordAPI {
         fun setVolume(id: Long, player: Vector3D, other: Vector3D) {
             if(!userVolume.containsKey(id))
                 userVolume[id] = 100
-            setVoiceLevel(id, (MathUtil.getVolume(MathUtil.getDistance(player, other)) * userVolume[id]!!).toInt())
+            setVoiceLevel(id, (MathUtil.getVolume(MathUtil.getDistance(player, other)) * userVolume[id]!!).toInt() / 100)
         }
 
         fun setVolumeZero(id: Long) = setVoiceLevel(id, 0)
