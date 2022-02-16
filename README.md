@@ -18,7 +18,7 @@ This README.md was written by a non-English speaking person, so it might be awkw
   ## ❓How to use?
    ### 🚀installation
    This mod currently supports windows forge 1.16.5 only. (Linux soon. MacOS somedays..)<br>
-   Just unzip the [release zip](https://github.com/Iroom-gbs/tritone/releases/download/beta/tritone-windows.zip) file on your minecraft mods directory.<br>
+   Just unzip the [release](https://github.com/Iroom-gbs/tritone/releases) file on your minecraft mods directory.<br>
    **You must have a logged-in Discord installed on your computer.**
    ### ✏Basic Use
    After installing this mod and entering the multiplayer server, you will automatically be able to prioximity voice chat.<br>
