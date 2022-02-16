@@ -13,13 +13,14 @@ import org.apache.logging.log4j.LogManager
 class DiscordAPI {
     companion object {
         lateinit var event: DiscordEvent
+        var lock = false
 
-        public fun initialize(clientKey: Long, event: DiscordEvent) {
+        fun initialize(clientKey: Long, event: DiscordEvent) {
             this.event = event
             initialize(clientKey)
         }
 
-        val logger = LogManager.getLogger()
+        private val logger = LogManager.getLogger()
 
         @JvmStatic
         private external fun initialize(clientKey: Long)
@@ -72,11 +73,18 @@ class DiscordAPI {
         fun lobbyMoved() {
             event.lobbyMoved(currentLobby)
             logger.info("Lobby: $currentLobby has moved")
-            getServerList()
+            lock = false
         }
 
         @JvmStatic
-        external fun joinLobby(name: String)
+        private external fun joinLobby(name: String)
+
+        fun tryJoinLobby(name: String): Boolean {
+            if(lock) return false
+            lock = true
+            joinLobby(name)
+            return true
+        }
 
         @JvmStatic
         external fun getServerList()

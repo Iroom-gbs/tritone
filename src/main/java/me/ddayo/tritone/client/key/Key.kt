@@ -9,6 +9,7 @@ import me.ddayo.tritone.client.util.MinecraftStringUtil.Companion.keyString
 import me.ddayo.tritone.client.util.MinecraftStringUtil.Companion.keyDiscordCategory
 import me.ddayo.tritone.client.util.MinecraftStringUtil.Companion.keyGuiCategory
 import net.minecraft.client.Minecraft
+import net.minecraft.util.text.StringTextComponent
 import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.fml.client.registry.ClientRegistry
 import org.lwjgl.glfw.GLFW
@@ -41,7 +42,8 @@ class Key {
         if(openParticipantGui.isKeyDown) {
             //Minecraft.getInstance().displayGuiScreen(ParticipantGui())
 
-            DiscordAPI.joinLobby("kkkk")
+            if(!DiscordAPI.tryJoinLobby("kkkk"))
+                Minecraft.getInstance().player!!.sendMessage(StringTextComponent("이미 로비를 이동중입니다!"), Minecraft.getInstance().player!!.uniqueID)
         }
 
         if(openVoiceChannelGui.isKeyDown)
