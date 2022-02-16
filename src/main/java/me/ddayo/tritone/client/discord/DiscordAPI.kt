@@ -1,6 +1,7 @@
 package me.ddayo.tritone.client.discord
 
 import net.minecraft.client.Minecraft
+import net.minecraft.util.text.StringTextComponent
 import org.apache.logging.log4j.LogManager
 
 
@@ -54,6 +55,7 @@ class DiscordAPI {
         //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
         @JvmStatic
         fun voiceConnected() {
+            Minecraft.getInstance().player?.sendMessage(StringTextComponent("음성채팅에 연결되었습니다!"), Minecraft.getInstance().player?.uniqueID)
             logger.info("Voice connected")
         }
 

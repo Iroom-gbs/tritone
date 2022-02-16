@@ -6,6 +6,7 @@
 
 use std::borrow::Borrow;
 use std::process::exit;
+use std::{thread, time};
 use discord_game_sdk::{Action, Activity, Cast, Comparison, Discord, Entitlement, EventHandler, LobbyID, LobbyKind, LobbyMemberTransaction, LobbyTransaction, NetworkChannelID, NetworkPeerID, Relationship, SearchQuery, User, UserAchievement, UserID};
 use jni::{JavaVM, JNIEnv};
 use jni::objects::JString;
@@ -90,7 +91,7 @@ pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_initialize(env: JN
 #[no_mangle]
 pub extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_tick(env: JNIEnv, object: jobject) {
     match getDiscord().run_callbacks() {
-        Err(e) => exit(RUN_CALLBACK_FAILED),
+        Err(e) => println!("{}", e),//exit(RUN_CALLBACK_FAILED),
         _ => ()
     }
 }
@@ -127,7 +128,9 @@ pub unsafe extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_joinLobby(e
 
     let name = env.get_string(jlobbyName).unwrap().to_str().unwrap().to_string();
     if cl == 0 {
-        tryJoin(name, getDiscord());
+        thread::spawn(move || {
+            tryJoin(name, getDiscord());
+        });
     }
     else {
         getDiscord().disconnect_lobby(cl, move|discord, result| {
@@ -135,7 +138,9 @@ pub unsafe extern fn Java_me_ddayo_tritone_client_discord_DiscordAPI_joinLobby(e
             println!("Disconnect");
             let env = getVM().attach_current_thread_permanently().unwrap();
             env.set_static_field(DISCORD_API_CLASS, env.get_static_field_id(DISCORD_API_CLASS, "currentLobby", "J").unwrap(), (0 as jlong).into());
-            tryJoin(name, discord);
+            thread::spawn(move || {
+                tryJoin(name, getDiscord());
+            });
         });
     }
 }
@@ -154,7 +159,11 @@ pub unsafe fn tryJoin(name: String, discord: &Discord<DiscordEvent>) {
                 .add_metadata("name".to_string(), name.to_string()), |discord, result| {
                 let env = getVM().attach_current_thread_permanently().unwrap();
                 match result {
-                    Err(e) => println!("{}", e),
+                    Err(e) => {
+                        thread::sleep(time::Duration::from_millis(100));
+                        tryJoin(name, discord);
+                        return;
+                    },
                     Ok(r) => println!("{}", r.id())
                 };
                 env.call_static_method(DISCORD_API_CLASS, "lobbyMovedPre", "(J)V", &[(result.unwrap().id() as jlong).into()]);
@@ -185,6 +194,14 @@ pub unsafe fn tryJoin(name: String, discord: &Discord<DiscordEvent>) {
         }
         else {
             discord.connect_lobby(discord.lobby_id_at(0).unwrap(), discord.lobby_metadata(discord.lobby_id_at(0).unwrap(), "p").unwrap(), |discord, result| {
+                match result {
+                    Err(e) => {
+                        thread::sleep(time::Duration::from_millis(100));
+                        tryJoin(name, discord);
+                        return
+                    }
+                    Ok(r) => ()
+                }
                 let env = getVM().attach_current_thread_permanently().unwrap();
 
                 discord.update_member(result.unwrap().id(), discord.current_user().unwrap().id(), &LobbyMemberTransaction::new()

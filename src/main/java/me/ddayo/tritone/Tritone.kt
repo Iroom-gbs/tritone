@@ -25,8 +25,8 @@ class Tritone {
     init {
         //System.loadLibrary("discord_game_sdk")
         //System.loadLibrary("native")
-        System.load(File(Minecraft.getInstance().gameDir, "discord_game_sdk.dll").canonicalPath)
-        System.load(File(Minecraft.getInstance().gameDir, "native.dll").canonicalPath)
+        System.load(File(Minecraft.getInstance().gameDir, "mods/discord_game_sdk.dll").canonicalPath)
+        System.load(File(Minecraft.getInstance().gameDir, "mods/native.dll").canonicalPath)
         DiscordAPI.initialize()
         FMLJavaModLoadingContext.get().modEventBus.addListener { event: FMLCommonSetupEvent -> setup(event) }
         MinecraftForge.EVENT_BUS.register(this)
