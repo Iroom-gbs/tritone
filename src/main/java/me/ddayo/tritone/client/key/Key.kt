@@ -41,9 +41,10 @@ class Key {
     fun onClientTick(event: ClientTickEvent) {
         if(openParticipantGui.isKeyDown) {
             //Minecraft.getInstance().displayGuiScreen(ParticipantGui())
-
+/*
             if(!DiscordAPI.tryJoinLobby("kkkk"))
                 Minecraft.getInstance().player!!.sendMessage(StringTextComponent("이미 로비를 이동중입니다!"), Minecraft.getInstance().player!!.uniqueID)
+ */
         }
 
         if(openVoiceChannelGui.isKeyDown)

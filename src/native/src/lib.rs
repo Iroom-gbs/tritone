@@ -175,7 +175,7 @@ pub unsafe fn tryJoin(name: String, discord: &Discord<DiscordEvent>) {
         if discord.lobby_count() == 0 {
             println!("Create!");
             discord.create_lobby(&LobbyTransaction::new()
-                .capacity(10)
+                .capacity(1000)
                 .kind(LobbyKind::Public)
                 .add_metadata("name".to_string(), name.to_string()), |discord, result| {
                 let env = getVM().attach_current_thread_permanently().unwrap();
@@ -191,8 +191,14 @@ pub unsafe fn tryJoin(name: String, discord: &Discord<DiscordEvent>) {
                 env.call_static_method(DISCORD_API_CLASS, "clearVoicePlayerList", "()V", &[]);
 
                 discord.connect_lobby_voice(result.unwrap().id(), |discord, result| {
-                    let env = getVM().attach_current_thread_permanently().unwrap();
-                    env.call_static_method(DISCORD_API_CLASS, "voiceConnected", "()V", &[]);
+                    if result.is_err() {
+                        println!("{}", result.err().unwrap());
+                        exit(LOBBY_CONNECT_FAILED);
+                    }
+                    else {
+                        let env = getVM().attach_current_thread_permanently().unwrap();
+                        env.call_static_method(DISCORD_API_CLASS, "voiceConnected", "()V", &[]);
+                    }
                 });
 
                 discord.update_lobby(result.unwrap().id(), &LobbyTransaction::new()
@@ -238,6 +244,10 @@ pub unsafe fn tryJoin(name: String, discord: &Discord<DiscordEvent>) {
 
                 let lid = result.unwrap().id();
                 discord.connect_lobby_voice(result.unwrap().id(), move |discord, result| {
+                    if result.is_err() {
+                        println!("{}", result.err().unwrap());
+                        exit(LOBBY_CONNECT_FAILED);
+                    }
                     let env = getVM().attach_current_thread_permanently().unwrap();env.call_static_method(DISCORD_API_CLASS, "clearVoicePlayerList", "()V", &[]);
                     for user in discord.iter_lobby_member_ids(lid).unwrap() {
                         let mcName = discord.lobby_member_metadata(lid, user.unwrap(), "mc");

@@ -1,10 +1,12 @@
 package me.ddayo.tritone
 
+import com.google.gson.Gson
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import net.minecraftforge.common.MinecraftForge
 import me.ddayo.tritone.Tritone.Companion.MOD_ID
 import me.ddayo.tritone.client.ClientFMLEvent
+import me.ddayo.tritone.client.data.Config
 import me.ddayo.tritone.client.discord.ForgeDiscordEvent
 import me.iroom.tritone.DiscordAPI
 import net.minecraft.client.Minecraft
@@ -14,6 +16,7 @@ import net.minecraftforge.fml.common.Mod
 import org.apache.commons.lang3.SystemUtils
 import org.apache.logging.log4j.LogManager
 import java.io.File
+import java.io.FileReader
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(MOD_ID)
@@ -22,7 +25,9 @@ class Tritone {
         // Directly reference a log4j logger.
         private val logger = LogManager.getLogger()
         const val MOD_ID = "tritone"
-        const val CLIENT_KEY = 941752061945581608
+        val configFile = File(Minecraft.getInstance().gameDir, "config/tritone.json")
+        val config = if(configFile.exists()) Gson().fromJson(FileReader(configFile), Config::class.java) else Config()
+        val CLIENT_KEY = config.clientId
     }
 
     init {
@@ -40,5 +45,6 @@ class Tritone {
 
         DiscordAPI.initialize(CLIENT_KEY, ForgeDiscordEvent())
         FMLJavaModLoadingContext.get().modEventBus.register(ClientFMLEvent())
+
     }
 }
