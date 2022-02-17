@@ -1,5 +1,6 @@
 package me.ddayo.tritone.client.key
 
+import me.ddayo.tritone.client.gui.ParticipantGui
 import me.ddayo.tritone.client.util.MinecraftStringUtil
 import me.iroom.tritone.DiscordAPI
 import net.minecraft.client.settings.KeyBinding
@@ -38,13 +39,8 @@ class Key {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     fun onClientTick(event: ClientTickEvent) {
-        if(openParticipantGui.isKeyDown) {
-            //Minecraft.getInstance().displayGuiScreen(ParticipantGui())
-/*
-            if(!DiscordAPI.tryJoinLobby("kkkk"))
-                Minecraft.getInstance().player!!.sendMessage(StringTextComponent("이미 로비를 이동중입니다!"), Minecraft.getInstance().player!!.uniqueID)
- */
-        }
+        if(openParticipantGui.isKeyDown)
+            Minecraft.getInstance().displayGuiScreen(ParticipantGui())
 
         if(muteKey.isKeyDown) {
             DiscordAPI.inverseMuteStatus()
