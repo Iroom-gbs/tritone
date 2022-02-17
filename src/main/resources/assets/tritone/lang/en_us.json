@@ -1,0 +1,12 @@
+{
+  "KEY.tritone.participateGui": "Participate GUI screen",
+  "KEY.tritone.mute": "Mute myself",
+  "KEY.tritone.inaudible": "Inaudible myself",
+  "KEY.tritone.gui": "Tritone GUI keys",
+  "KEY.tritone.discord": "Tritone discord keys",
+
+  "STRING.tritone.muted": "You are muted",
+  "STRING.tritone.unmuted": "You are unmuted",
+  "STRING.tritone.inaudible": "You are inaudible",
+  "STRING.tritone.audible": "You are audible"
+}

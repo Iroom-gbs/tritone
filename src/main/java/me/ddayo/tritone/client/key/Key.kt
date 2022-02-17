@@ -1,7 +1,7 @@
 package me.ddayo.tritone.client.key
 
+import me.ddayo.tritone.client.util.MinecraftStringUtil
 import me.iroom.tritone.DiscordAPI
-import me.ddayo.tritone.client.gui.VoiceChannelListGui
 import net.minecraft.client.settings.KeyBinding
 import net.minecraftforge.event.TickEvent.ClientTickEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
@@ -9,6 +9,7 @@ import me.ddayo.tritone.client.util.MinecraftStringUtil.Companion.keyString
 import me.ddayo.tritone.client.util.MinecraftStringUtil.Companion.keyDiscordCategory
 import me.ddayo.tritone.client.util.MinecraftStringUtil.Companion.keyGuiCategory
 import net.minecraft.client.Minecraft
+import net.minecraft.client.resources.I18n
 import net.minecraft.util.text.StringTextComponent
 import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.fml.client.registry.ClientRegistry
@@ -19,9 +20,8 @@ class Key {
     companion object {
         private val keys = emptyList<KeyBinding>().toMutableList()
         private val openParticipantGui = OptionKey(keyString("participateGui"), GLFW.GLFW_KEY_O, keyGuiCategory)
-        private val openVoiceChannelGui = OptionKey(keyString("voiceChannelGui"), GLFW.GLFW_KEY_V, keyGuiCategory)
         private val muteKey = OptionKey(keyString("mute"), GLFW.GLFW_KEY_M, keyDiscordCategory)
-        private val deafKey = OptionKey(keyString("muteInput"), GLFW.GLFW_KEY_I, keyDiscordCategory)
+        private val deafKey = OptionKey(keyString("inaudible"), GLFW.GLFW_KEY_I, keyDiscordCategory)
         private var initialized = false
 
         fun registerKeys() {
@@ -29,7 +29,6 @@ class Key {
                 throw IllegalAccessException("Key need to initialized only once!!")
             initialized = true
             keys.add(openParticipantGui)
-            keys.add(openVoiceChannelGui)
             keys.add(muteKey)
             keys.add(deafKey)
             for(k in keys)
@@ -47,22 +46,19 @@ class Key {
  */
         }
 
-        if(openVoiceChannelGui.isKeyDown)
-            Minecraft.getInstance().displayGuiScreen(VoiceChannelListGui())
-
         if(muteKey.isKeyDown) {
             DiscordAPI.inverseMuteStatus()
             if(DiscordAPI.isMuted())
-                Minecraft.getInstance().player!!.sendMessage(StringTextComponent("음소거되었습니다."), Minecraft.getInstance().player!!.uniqueID)
-            else Minecraft.getInstance().player!!.sendMessage(StringTextComponent("음소거 해제되었습니다."), Minecraft.getInstance().player!!.uniqueID)
+                MinecraftStringUtil.sendLocalizedString("muted")
+            else  MinecraftStringUtil.sendLocalizedString("unmuted")
         }
 
         if(deafKey.isKeyDown) {
             DiscordAPI.inverseDeafStatus()
 
-            if(DiscordAPI.isMuted())
-                Minecraft.getInstance().player!!.sendMessage(StringTextComponent("해드셋 음소거 되었습니다."), Minecraft.getInstance().player!!.uniqueID)
-            else Minecraft.getInstance().player!!.sendMessage(StringTextComponent("헤드셋 음소거 해제되었습니다."), Minecraft.getInstance().player!!.uniqueID)
+            if(DiscordAPI.isDeafened())
+                MinecraftStringUtil.sendLocalizedString("inaudible")
+            else MinecraftStringUtil.sendLocalizedString("audible")
         }
     }
 }

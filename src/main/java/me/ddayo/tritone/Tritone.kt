@@ -2,16 +2,12 @@ package me.ddayo.tritone
 
 import com.google.gson.Gson
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
-import net.minecraftforge.common.MinecraftForge
 import me.ddayo.tritone.Tritone.Companion.MOD_ID
 import me.ddayo.tritone.client.ClientFMLEvent
 import me.ddayo.tritone.client.data.Config
 import me.ddayo.tritone.client.discord.ForgeDiscordEvent
 import me.iroom.tritone.DiscordAPI
 import net.minecraft.client.Minecraft
-import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent
 import net.minecraftforge.fml.common.Mod
 import org.apache.commons.lang3.SystemUtils
 import org.apache.logging.log4j.LogManager

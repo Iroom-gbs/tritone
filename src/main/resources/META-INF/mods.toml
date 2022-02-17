@@ -7,7 +7,6 @@ version="${file.jarVersion}"
 displayName="Tritone"
 updateJSONURL="https://github.com/dayo05/discordMumble"
 authors="Dayo"
-# The description text for the mod (multi line!) (#mandatory)
 description='''
 Tritone the distance based volume controller for discord
 '''

@@ -1,0 +1,12 @@
+{
+  "KEY.tritone.participateGui": "참여자 리스트",
+  "KEY.tritone.mute": "뮤트",
+  "KEY.tritone.inaudible": "음소거",
+  "KEY.tritone.gui": "Tritone GUI",
+  "KEY.tritone.discord": "Tritone 디스코드",
+
+  "STRING.tritone.muted": "뮤트되었습니다!",
+  "STRING.tritone.unmuted": "뮤트가 해제되었습니다!",
+  "STRING.tritone.inaudible": "음소거되었습니다",
+  "STRING.tritone.audible": "음소거가 해제되었습니다!"
+}
