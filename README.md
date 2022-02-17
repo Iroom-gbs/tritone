@@ -15,6 +15,7 @@ Download: [Windows 1.16.5](https://github.com/Iroom-gbs/tritone/releases/downloa
 ## ✖ Why not use this?
 * There are other Minecraft prioximity voice chat modes.
 * Due to the limitations of Discord, 3D sound is not supported.
+* Requires a Discord account
 
 ## ❓How to use?
 
