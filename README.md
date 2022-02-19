@@ -1,5 +1,7 @@
 ![Logo](./image/tritonelogo.jpg)
 
+[Korean(한국어) Readme](./README_ko.md)
+
 # 🔉TRITONE
 **Minecraft proximity voice chat** made possible with the [discord-game-sdk](https://discord.com/developers/docs/game-sdk/sdk-starter-guide).
 
