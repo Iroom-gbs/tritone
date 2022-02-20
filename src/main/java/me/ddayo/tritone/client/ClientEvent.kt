@@ -1,5 +1,6 @@
 package me.ddayo.tritone.client
 
+import me.ddayo.tritone.client.util.MinecraftStringUtil
 import me.iroom.tritone.DiscordAPI
 import me.iroom.tritone.util.MathUtil
 import me.iroom.tritone.util.Vector3D
@@ -23,14 +24,18 @@ class ClientEvent {
         if(Minecraft.getInstance().player != null) {
             val cloned = HashSet<String>(DiscordAPI.managedPlayer).toMutableSet()
             for (x in Minecraft.getInstance().world?.players!!) {
+                logger.info(x.uniqueID)
                 if(x.uniqueID == Minecraft.getInstance().player!!.uniqueID) continue
                 val p = Minecraft.getInstance().player!!.positionVec
                 val o = x.positionVec
 
                 if (cloned.contains(x.uniqueID.toString())) {
+                    logger.info("${x.uniqueID} ${x.name.string}")
                     cloned.remove(x.uniqueID.toString())
                     DiscordAPI.setVolume(DiscordAPI.voicePlayerList[x.uniqueID.toString()]!!, Vector3D(p.x, p.y, p.z), Vector3D(o.x, o.y, o.z))
                 } else if (DiscordAPI.voicePlayerList.containsKey(x.uniqueID.toString())) {
+                    logger.info("${x.uniqueID} ${x.name.string}")
+                    MinecraftStringUtil.nameCache[x.uniqueID] = x.name.string
                     DiscordAPI.managedPlayer.add(x.uniqueID.toString())
                     DiscordAPI.setVolume(DiscordAPI.voicePlayerList[x.uniqueID.toString()]!!, Vector3D(p.x, p.y, p.z), Vector3D(o.x, o.y, o.z))
                 }

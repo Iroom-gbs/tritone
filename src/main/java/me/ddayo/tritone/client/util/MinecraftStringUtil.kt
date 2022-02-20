@@ -4,6 +4,7 @@ import me.ddayo.tritone.Tritone
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.I18n
 import net.minecraft.util.text.StringTextComponent
+import java.util.*
 
 class MinecraftStringUtil {
     companion object {
@@ -13,5 +14,7 @@ class MinecraftStringUtil {
         fun getString(key: String) = I18n.format("STRING.${Tritone.MOD_ID}.$key")
 
         fun sendLocalizedString(key: String) = Minecraft.getInstance().player!!.sendMessage(StringTextComponent(getString(key)), Minecraft.getInstance().player!!.uniqueID)
+
+        val nameCache = emptyMap<UUID, String>().toMutableMap()
     }
 }
