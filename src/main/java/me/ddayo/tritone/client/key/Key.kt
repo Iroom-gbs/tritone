@@ -39,8 +39,11 @@ class Key {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     fun onClientTick(event: ClientTickEvent) {
-        if(openParticipantGui.isKeyDown)
-            Minecraft.getInstance().displayGuiScreen(ParticipantGui())
+        if(openParticipantGui.isKeyDown) {
+            if(ParticipantGui.handleOpen)
+                Minecraft.getInstance().displayGuiScreen(ParticipantGui())
+            else ParticipantGui.handleOpen = true
+        }
 
         if(muteKey.isKeyDown) {
             DiscordAPI.inverseMuteStatus()

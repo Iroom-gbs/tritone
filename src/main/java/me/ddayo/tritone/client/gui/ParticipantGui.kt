@@ -13,6 +13,8 @@ import org.lwjgl.opengl.GL21.*
 import me.ddayo.tritone.client.util.RenderUtil.Companion.renderRect
 import me.ddayo.tritone.client.util.RenderUtil.Companion.bindTexture
 import me.iroom.tritone.DiscordAPI
+import net.minecraft.client.Minecraft
+import org.lwjgl.glfw.GLFW
 import java.util.*
 
 class ParticipantGui: Screen(StringTextComponent("")) {
@@ -23,9 +25,12 @@ class ParticipantGui: Screen(StringTextComponent("")) {
         const val NEAR = false
         const val ALL = true
         var mod = NEAR
+        var handleOpen = true
     }
 
     val debugList = listOf(*DiscordAPI.voicePlayerList.keys.mapNotNull { MinecraftStringUtil.nameCache[UUID.fromString(it)] }.toTypedArray(), "hello", "hellooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo")
+    var listStartPos = 35
+
 
     override fun init() {
         addButton(MuteButton(5 + (width - tw) / 2, th - 25 + (height - th) / 2, 20, 20))
@@ -50,16 +55,23 @@ class ParticipantGui: Screen(StringTextComponent("")) {
             bindTexture("testred.png")
             renderRect(5, 5, tw - 10, 25) //Search
 
-            var renderPos = 35
+            var renderPos = listStartPos
             for(d in debugList) {
-                logger.info(d)
-                DiscordUserButton(d).render(5, renderPos)
+                if(renderPos > 35 - DiscordUserButton.HEIGHT && renderPos < th - 35) {
+                    DiscordUserButton(d).render(5, renderPos)
+                }
                 renderPos += DiscordUserButton.HEIGHT
             }
-//            bindTexture("testred.png")
-//            renderRect(5, 35, tw - 10, th - 70) //Main
         }
         glPopMatrix()
         super.render(matrixStack, mouseX, mouseY, partialTicks)
+    }
+
+    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+        if(keyCode == GLFW.GLFW_KEY_O) {
+            Minecraft.getInstance().displayGuiScreen(null)
+            handleOpen = false
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers)
     }
 }
