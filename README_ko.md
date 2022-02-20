@@ -26,6 +26,9 @@
 그냥 [이 파일](https://github.com/Iroom-gbs/tritone/releases) 을 mods폴더에 압축 해제하면 됩니다
 
 **아 그리고, Discord가 켜져있어야되요!!!**
+
+#### Linux를 사용중이라면...
+리눅스에선 추가적인 설정이 필요합니다. 그냥 libdiscord_game_sdk.so파일을 /lib 폴더 등 LD_LIBRARY_PATH로 추가해주세요!! /lib의 경우 관리자 권한이 필요합니다.
   
 ### ✏ 기본적인 사용법
 그냥 이 모드를 깔고 아무 서버나 들어가면 그 서버에 있는 이 모드를 설치한 사람들이랑 음성채팅이 될꺼에요
