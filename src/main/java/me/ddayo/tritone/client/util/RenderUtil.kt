@@ -25,5 +25,21 @@ class RenderUtil {
             }
             glEnd()
         }
+
+        @JvmStatic
+        fun renderRect(x: Double, y: Double, w: Double, h: Double) {
+            glBegin(GL_QUADS)
+            run {
+                glTexCoord2i(1, 0)
+                glVertex2d(x + w, y)
+                glTexCoord2i(0, 0)
+                glVertex2d(x, y)
+                glTexCoord2i(0, 1)
+                glVertex2d(x, y + h)
+                glTexCoord2i(1, 1)
+                glVertex2d(x + w, y + h)
+            }
+            glEnd()
+        }
     }
 }

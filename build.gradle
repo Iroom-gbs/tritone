@@ -33,7 +33,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                discordmumble {
+                tritone {
                     source sourceSets.main
                 }
             }
@@ -47,7 +47,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                discordmumble {
+                tritone {
                     source sourceSets.main
                 }
             }
@@ -59,10 +59,10 @@ minecraft {
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
 
-            args '--mod', 'discordmumble', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            args '--mod', 'tritone', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
-                discordmumble {
+                tritone {
                     source sourceSets.main
                 }
             }
@@ -84,7 +84,7 @@ dependencies {
 jar {
     manifest {
         attributes([
-                "Specification-Title"     : "discordmumble",
+                "Specification-Title"     : "tritone",
                 "Specification-Vendor"    : "Dayo",
                 "Specification-Version"   : "1",
                 "Implementation-Title"    : project.name,
