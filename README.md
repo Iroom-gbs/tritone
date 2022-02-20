@@ -52,7 +52,6 @@ This prevents voice chatting with unwanted people.
 ### InProgress
 * GUI
 * Forge 1.12 support
-* Linux support
 
 ### Planned
 * Forge 1.18 support
