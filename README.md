@@ -10,7 +10,7 @@ Download: [Windows 1.16.5](https://github.com/Iroom-gbs/tritone/releases/downloa
 **This mod is currently in beta! There may be some bugs.**
 
 ## ✔ Why use this?
-* Tritone **does not** require any configuration on the server side. so, you can use Tritone on any public server in Minecraft.
+* Tritone **does not** require any configuration on the server side. so, you can use Tritone on public server in Minecraft.
 * Discord's voice chat has better sound quality than other mods.
 * Setting up this mod is very, very easy.
 
