@@ -18,6 +18,7 @@ Download: [Windows 1.16.5](https://github.com/Iroom-gbs/tritone/releases/downloa
 * There are other Minecraft prioximity voice chat modes.
 * Due to the limitations of Discord, 3D sound is not supported.
 * Requires a Discord account
+* online-mode=true required on your server.properties. This mod uses sessionID to identify players.
 
 ## ❓How to use?
 
