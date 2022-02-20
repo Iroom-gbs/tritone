@@ -30,7 +30,7 @@ class ParticipantGui: Screen(StringTextComponent("")) {
         var handleOpen = true
     }
 
-    private val debugList = listOf(*DiscordAPI.voicePlayerList.keys.mapNotNull { MinecraftStringUtil.nameCache[UUID.fromString(it)] }.toTypedArray(), "hello", "hellooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a")
+    private val debugList = listOf(*DiscordAPI.voicePlayerList.keys.mapNotNull { MinecraftStringUtil.nameCache[UUID.fromString(it)] }.toTypedArray(), "hello", "hellooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "aa", "ab", "ac", "ad", "ae", "af", "ag", "ah", "ai", "aj", "ak", "am", "an", "al", "ao", "ap")
     //val debugList = listOf(*DiscordAPI.voicePlayerList.keys.mapNotNull{MinecraftStringUtil.nameCache[UUID.fromString(it)]}.toTypedArray())
     private var barY = 1.0
     private val barHeight: Double
@@ -105,7 +105,17 @@ class ParticipantGui: Screen(StringTextComponent("")) {
     }
 
     override fun mouseReleased(mouseX: Double, mouseY: Double, button: Int): Boolean {
-        isBarLocationEditMod = false
+        if(isBarLocationEditMod)
+            isBarLocationEditMod = false
+        else {
+            val mx = mouseX - (width / 2.0 - tw / 2)
+            val my = mouseY - (height / 2.0 - th / 2)
+            if(mx >= 5 && mx <= tw - 15
+                    && my >= 35 && my <= th - 35) {
+                val idx = ((my - 35 + (barY * DiscordUserButton.HEIGHT * debugList.size) / (th - 70)) / DiscordUserButton.HEIGHT).toInt()
+                logger.info(debugList[idx])
+            }
+        }
         return super.mouseReleased(mouseX, mouseY, button)
     }
 }
