@@ -107,7 +107,7 @@ class DiscordAPI {
 
         fun setVolume(id: Long, player: Vector3D, other: Vector3D) {
             if(!userVolume.containsKey(id))
-                userVolume[id] = 100
+                userVolume[id] = 100.0
             setVoiceLevel(id, (MathUtil.getVolume(MathUtil.getDistance(player, other)) * userVolume[id]!!).toInt() / 100)
         }
 
@@ -140,6 +140,6 @@ class DiscordAPI {
 
         val managedPlayer = emptySet<String>().toMutableSet()
 
-        val userVolume = emptyMap<Long, Int>().toMutableMap()
+        val userVolume = emptyMap<Long, Double>().toMutableMap()
     }
 }

@@ -2,7 +2,6 @@ package me.ddayo.tritone.client.gui
 
 import com.mojang.blaze3d.matrix.MatrixStack
 import me.ddayo.tritone.client.gui.button.AudibleButton
-import me.ddayo.tritone.client.gui.button.DiscordUserButton
 import me.ddayo.tritone.client.gui.button.MuteButton
 import me.ddayo.tritone.client.gui.button.SwitchUserListModButton
 import me.ddayo.tritone.client.util.MinecraftStringUtil
@@ -28,13 +27,19 @@ class ParticipantGui: Screen(StringTextComponent("")) {
         const val ALL = true
         var mod = NEAR
         var handleOpen = true
+
+        const val singleItemHeight = 20.0
+        const val singleItemWidth = tw - 10.0
+        const val maxTextWidth = singleItemWidth - 50
     }
+
+    private val stringRender = Minecraft.getInstance().fontRenderer
 
     private val debugList = listOf(*DiscordAPI.voicePlayerList.keys.mapNotNull { MinecraftStringUtil.nameCache[UUID.fromString(it)] }.toTypedArray(), "hello", "hellooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "aa", "ab", "ac", "ad", "ae", "af", "ag", "ah", "ai", "aj", "ak", "am", "an", "al", "ao", "ap")
     //val debugList = listOf(*DiscordAPI.voicePlayerList.keys.mapNotNull{MinecraftStringUtil.nameCache[UUID.fromString(it)]}.toTypedArray())
     private var barY = 1.0
     private val barHeight: Double
-        get() = if(th - 70 > DiscordUserButton.HEIGHT * debugList.size) th - 70.0 else (th - 70.0) * (th - 70) / (DiscordUserButton.HEIGHT * debugList.size)
+        get() = if(th - 70 > singleItemHeight * debugList.size) th - 70.0 else (th - 70.0) * (th - 70) / (singleItemHeight * debugList.size)
 
     var isBarLocationEditMod = false
 
@@ -61,19 +66,27 @@ class ParticipantGui: Screen(StringTextComponent("")) {
             bindTexture("testred.png")
             renderRect(5, 5, tw - 10, 25) //Search
 
-            var renderPos = 35 - barY * DiscordUserButton.HEIGHT * debugList.size / (th - 70)
+            var renderPos = 35 - barY * singleItemHeight * debugList.size / (th - 70)
             for(d in debugList) {
-                if(renderPos > 35 - DiscordUserButton.HEIGHT && renderPos < th - 35) {
-                    DiscordUserButton(d).render(5.0, renderPos)
+                if(renderPos > 35 - singleItemHeight && renderPos < th - 35) {
+                    renderSingleItem(d, 5.0, renderPos)
                 }
-                renderPos += DiscordUserButton.HEIGHT
+                renderPos += singleItemHeight
             }
 
             bindTexture("testblue.png")
-            renderRect(5 + DiscordUserButton.WIDTH - 10.0, barY + 35, 10.0, barHeight)
+            renderRect(5 + singleItemWidth - 10.0, barY + 35, 10.0, barHeight)
         }
         glPopMatrix()
         super.render(matrixStack, mouseX, mouseY, partialTicks)
+    }
+
+    fun renderSingleItem(mcName: String, x: Double, y: Double) {
+        bindTexture("testred.png")
+        renderRect(x, y, singleItemWidth, singleItemHeight)
+        if(stringRender.getStringWidth(mcName) > maxTextWidth)
+            stringRender.drawString(MatrixStack(), "${stringRender.trimStringToWidth(mcName, maxTextWidth.toInt())}...", (x + 5).toFloat(), (y + 2).toFloat(), 0xffffff)
+        else stringRender.drawString(MatrixStack(), mcName, (x + 5).toFloat(), (y + 2).toFloat(), 0xffffff)
     }
 
     override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
@@ -87,7 +100,7 @@ class ParticipantGui: Screen(StringTextComponent("")) {
     override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
         val mx = mouseX - (width / 2.0 - tw / 2)
         val my = mouseY - (height / 2.0 - th / 2)
-        if(mx >= 5 + DiscordUserButton.WIDTH - 10 && mx <= 5 + DiscordUserButton.WIDTH
+        if(mx >= 5 + singleItemWidth - 10 && mx <= 5 + singleItemWidth
                 && my >= 35 && my <= th - 35) {
             barY = min(max(0.0, my - 35 - barHeight / 2), th - 70.0 - barHeight)
             isBarLocationEditMod = true
@@ -112,10 +125,16 @@ class ParticipantGui: Screen(StringTextComponent("")) {
             val my = mouseY - (height / 2.0 - th / 2)
             if(mx >= 5 && mx <= tw - 15
                     && my >= 35 && my <= th - 35) {
-                val idx = ((my - 35 + (barY * DiscordUserButton.HEIGHT * debugList.size) / (th - 70)) / DiscordUserButton.HEIGHT).toInt()
+                val idx = ((my - 35 + (barY * singleItemHeight * debugList.size) / (th - 70)) / singleItemHeight).toInt()
                 logger.info(debugList[idx])
+                Minecraft.getInstance().pushGuiLayer(UserInfoGui(debugList[idx]))
             }
         }
         return super.mouseReleased(mouseX, mouseY, button)
+    }
+
+    override fun mouseScrolled(mouseX: Double, mouseY: Double, delta: Double): Boolean {
+        barY = min(max(0.0, barY - delta), th - 70.0 - barHeight)
+        return super.mouseScrolled(mouseX, mouseY, delta)
     }
 }

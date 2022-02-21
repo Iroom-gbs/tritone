@@ -1,12 +1,29 @@
 package me.ddayo.tritone.client.util
 
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 import me.ddayo.tritone.Tritone
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL21.*
+import java.awt.image.BufferedImage
+import java.net.URL
+import java.util.*
+import javax.imageio.ImageIO
 
 class RenderUtil {
     companion object {
+        val skinData = emptyMap<String, BufferedImage>().toMutableMap()
+
+        @JvmStatic
+        fun tryGetSkin(uuid: String): BufferedImage {
+            if(skinData.containsKey(uuid)) return skinData[uuid]!!
+            val base64 = JsonParser().parse(URL("https://sessionserver.mojang.com/session/minecraft/profile/$uuid").readText()).asJsonObject.getAsJsonArray("properties").first { it.asJsonObject.get("name").asString == "textures" }.asJsonObject.get("value").asString
+            val skin = ImageIO.read(URL(JsonParser().parse(URL(Base64.getDecoder().decode(base64).decodeToString()).readText()).asJsonObject.getAsJsonObject("textures").getAsJsonObject("SKIN")["url"].asString))
+            skinData[uuid] = skin.getSubimage(4, 4, 4, 4)
+            return skinData[uuid]!!
+        }
+
         @JvmStatic
         fun bindTexture(texture: String) = Minecraft.getInstance().textureManager.bindTexture(ResourceLocation(Tritone.MOD_ID, "textures/$texture"))
 

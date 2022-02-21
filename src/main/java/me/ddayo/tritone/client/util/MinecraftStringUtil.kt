@@ -1,6 +1,7 @@
 package me.ddayo.tritone.client.util
 
 import me.ddayo.tritone.Tritone
+import me.iroom.tritone.DiscordAPI
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.I18n
 import net.minecraft.util.text.StringTextComponent
@@ -16,5 +17,10 @@ class MinecraftStringUtil {
         fun sendLocalizedString(key: String) = Minecraft.getInstance().player!!.sendMessage(StringTextComponent(getString(key)), Minecraft.getInstance().player!!.uniqueID)
 
         val nameCache = emptyMap<UUID, String>().toMutableMap()
+
+        fun getIdByName(name: String): Long {
+            val uid = nameCache.filter { it.value == name }.values.first()
+            return DiscordAPI.voicePlayerList[uid]!!
+        }
     }
 }
