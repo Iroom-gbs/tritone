@@ -21,9 +21,11 @@
 ## ❓사용법
 
 ### 🚀 설치하기!!
-아직 Windows의 Minecraft 1.16.5 Forge밖에 지원을 못하고있어요... 아마 리눅스는 조만간 될꺼같네요
+아직 Windows, Linux의 Minecraft 1.16.5 Forge밖에 지원을 못하고있어요...
 
-그냥 [이 파일](https://github.com/Iroom-gbs/tritone/releases) 을 mods폴더에 압축 해제하면 됩니다
+Windows는 그냥 [이 파일](https://github.com/Iroom-gbs/tritone/releases) 을 mods폴더에 압축 해제하면 됩니다.
+
+Linux는 직접 빌드해주세요!!(아직 컴파일된 라이브러리는 제공되지 않습니다.)
 
 **아 그리고, Discord가 켜져있어야되요!!!**
 
