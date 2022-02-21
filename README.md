@@ -23,14 +23,14 @@ Download: [Windows 1.16.5](https://github.com/Iroom-gbs/tritone/releases/downloa
 ## ❓How to use?
 
 ### 🚀 Installation
-This mod currently only supports Windows Forge 1.16.5. (Linux soon. macOS one day)
+This mod currently only supports Windows and Linux Forge 1.16.5. (macOS one day)
 
 Just unzip the [release](https://github.com/Iroom-gbs/tritone/releases) file on your minecraft mods directory.
 
 **You must be logged-in to Discord on your computer.**
 
 #### Linux setup
-If you're using linux, then you should copy libdiscord_game_sdk.so to /lib or your own LD_LIBRARY_PATH. In case of /lib, administrator permission is required.
+If you're using linux, you should build them yourself and you should locate libdiscord_game_sdk.so to /lib or your own LD_LIBRARY_PATH. In case of /lib, administrator permission is required.
   
 ### ✏ Basic Use
 After installing this mod and entering the multiplayer server, you will automatically join the prioximity voice chat.<br>
