@@ -138,6 +138,14 @@ class DiscordAPI {
             voicePlayerList.clear()
         }
 
+        //IMPORTANT: DO NOT REMOVE THIS FUNCTION. THIS WILL CALL BY RUST!!!!
+        @JvmStatic
+        fun onMemberLeave(id: Long) {
+            val member = voicePlayerList.filter { it.value == id }.keys.first()
+            managedPlayer.remove(member)
+            voicePlayerList.remove(member)
+        }
+
         val managedPlayer = emptySet<String>().toMutableSet()
 
         val userVolume = emptyMap<Long, Double>().toMutableMap()

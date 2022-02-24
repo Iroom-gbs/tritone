@@ -36,6 +36,10 @@ impl EventHandler for DiscordEvent {
             env.call_static_method(DISCORD_API_CLASS, "addVoicePlayer", "(Ljava/lang/String;J)V", &[env.new_string(mcName.unwrap()).unwrap().into(), (member_id as jlong).into()]);
         }
     }
+
+    fn on_member_disconnect(&mut self, discord: &Discord<'_, Self>, lobby_id: LobbyID, member_id: UserID) {
+        getVM().attach_current_thread_permanently().unwrap().call_static_method(DISCORD_API_CLASS, "onMemberLeave", "(J)V", &[(member_id as jlong).into()]);
+    }
 }
 
 impl Default for DiscordEvent {
