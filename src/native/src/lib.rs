@@ -78,8 +78,8 @@ pub extern fn Java_me_iroom_tritone_DiscordAPI_initialize(env: JNIEnv, object: j
         DISCORD = Some(d);
     }
     getDiscord().update_activity(&Activity::empty()
-        .with_state("Test")
-        .with_details("와 성공!"), |discord, result| {
+        .with_state("Minecraft with Tritone")
+        .with_details(""), |discord, result| {
         if let Err(err) = result {
             exit(ACTIVITY_UPDATE_FAILED);
         }
