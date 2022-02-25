@@ -1,26 +1,36 @@
 package me.ddayo.tritone.client.util
 
-import com.google.gson.Gson
 import com.google.gson.JsonParser
 import me.ddayo.tritone.Tritone
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
+import org.apache.logging.log4j.LogManager
 import org.lwjgl.opengl.GL21.*
-import java.awt.image.BufferedImage
 import java.net.URL
 import java.util.*
 import javax.imageio.ImageIO
 
 class RenderUtil {
     companion object {
-        val skinData = emptyMap<String, BufferedImage>().toMutableMap()
+        private val skinData = emptyMap<String, IntArray>().toMutableMap()
 
         @JvmStatic
-        fun tryGetSkin(uuid: String): BufferedImage {
+        fun tryGetSkin(uuid: String): IntArray {
             if(skinData.containsKey(uuid)) return skinData[uuid]!!
-            val base64 = JsonParser().parse(URL("https://sessionserver.mojang.com/session/minecraft/profile/$uuid").readText()).asJsonObject.getAsJsonArray("properties").first { it.asJsonObject.get("name").asString == "textures" }.asJsonObject.get("value").asString
-            val skin = ImageIO.read(URL(JsonParser().parse(URL(Base64.getDecoder().decode(base64).decodeToString()).readText()).asJsonObject.getAsJsonObject("textures").getAsJsonObject("SKIN")["url"].asString))
-            skinData[uuid] = skin.getSubimage(4, 4, 4, 4)
+            val base64 = Base64.getDecoder().decode(JsonParser().parse(URL("https://sessionserver.mojang.com/session/minecraft/profile/$uuid").readText()).asJsonObject.getAsJsonArray("properties").first { it.asJsonObject.get("name").asString == "textures" }.asJsonObject.get("value").asString).decodeToString()
+            LogManager.getLogger().info(JsonParser().parse(base64).asJsonObject.getAsJsonObject("textures").getAsJsonObject("SKIN")["url"].asString)
+            val skin = ImageIO.read(URL(JsonParser().parse(base64).asJsonObject.getAsJsonObject("textures").getAsJsonObject("SKIN")["url"].asString))
+            val buf = IntArray(257)
+            var i = 0
+            for(x in 8 until 16)
+                for(y in 8 until 16) {
+                    val p = skin.getRGB(y, x)
+                    buf[i] = p shl 8
+                    i++
+                    LogManager.getLogger().info("${((p and 0xff0000) ushr 16).toByte()} ${((p and 0xff00) ushr 8).toByte()} ${(p and 0xff).toByte()}")
+                    LogManager.getLogger().info(p)
+                }
+            skinData[uuid] = buf
             return skinData[uuid]!!
         }
 
@@ -57,6 +67,12 @@ class RenderUtil {
                 glVertex2d(x + w, y + h)
             }
             glEnd()
+        }
+
+        fun push(f: () -> Unit) {
+            glPushMatrix()
+            f()
+            glPopMatrix()
         }
     }
 }

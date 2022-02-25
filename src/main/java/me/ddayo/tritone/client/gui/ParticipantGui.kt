@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager
 import org.lwjgl.opengl.GL21.*
 import me.ddayo.tritone.client.util.RenderUtil.Companion.renderRect
 import me.ddayo.tritone.client.util.RenderUtil.Companion.bindTexture
+import me.ddayo.tritone.client.util.RenderUtil.Companion.push
 import me.iroom.tritone.DiscordAPI
 import net.minecraft.client.Minecraft
 import org.lwjgl.glfw.GLFW
@@ -35,8 +36,8 @@ class ParticipantGui: Screen(StringTextComponent("")) {
 
     private val stringRender = Minecraft.getInstance().fontRenderer
 
-    private val debugList = listOf(*DiscordAPI.voicePlayerList.keys.mapNotNull { MinecraftStringUtil.nameCache[UUID.fromString(it)] }.toTypedArray(), "hello", "hellooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "aa", "ab", "ac", "ad", "ae", "af", "ag", "ah", "ai", "aj", "ak", "am", "an", "al", "ao", "ap")
-    //val debugList = listOf(*DiscordAPI.voicePlayerList.keys.mapNotNull{MinecraftStringUtil.nameCache[UUID.fromString(it)]}.toTypedArray())
+    //private val debugList = listOf(*DiscordAPI.voicePlayerList.keys.mapNotNull { MinecraftStringUtil.nameCache[UUID.fromString(it)] }.toTypedArray(), "Dayo05", "hello", "hellooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "aa", "ab", "ac", "ad", "ae", "af", "ag", "ah", "ai", "aj", "ak", "am", "an", "al", "ao", "ap")
+    private val debugList = listOf(*DiscordAPI.voicePlayerList.keys.mapNotNull{MinecraftStringUtil.nameCache[UUID.fromString(it)]}.toTypedArray())
     private var barY = 1.0
     private val barHeight: Double
         get() = if(th - 70 > singleItemHeight * debugList.size) th - 70.0 else (th - 70.0) * (th - 70) / (singleItemHeight * debugList.size)
@@ -53,8 +54,7 @@ class ParticipantGui: Screen(StringTextComponent("")) {
     override fun render(matrixStack: MatrixStack, mouseX: Int, mouseY: Int, partialTicks: Float) {
         renderBackground(matrixStack)
 
-        glPushMatrix()
-        run {
+        push {
             glEnable(GL_TEXTURE_2D)
             glEnable(GL_BLEND)
 
@@ -77,7 +77,6 @@ class ParticipantGui: Screen(StringTextComponent("")) {
             bindTexture("testblue.png")
             renderRect(5 + singleItemWidth - 10.0, barY + 35, 10.0, barHeight)
         }
-        glPopMatrix()
         super.render(matrixStack, mouseX, mouseY, partialTicks)
     }
 
@@ -126,8 +125,10 @@ class ParticipantGui: Screen(StringTextComponent("")) {
             if(mx >= 5 && mx <= tw - 15
                     && my >= 35 && my <= th - 35) {
                 val idx = ((my - 35 + (barY * singleItemHeight * debugList.size) / (th - 70)) / singleItemHeight).toInt()
-                logger.info(debugList[idx])
-                Minecraft.getInstance().pushGuiLayer(UserInfoGui(debugList[idx]))
+                if(debugList.size > idx) {
+                    logger.info(debugList[idx])
+                    Minecraft.getInstance().pushGuiLayer(UserInfoGui(debugList[idx]))
+                }
             }
         }
         return super.mouseReleased(mouseX, mouseY, button)
