@@ -3,7 +3,7 @@
 # 🔉TRITONE
 [discord-game-sdk](https://discord.com/developers/docs/game-sdk/sdk-starter-guide)를 이용해 만든 **Minecraft 음성채팅 모드!!**
 
-다운로드: [Windows 1.16.5](https://github.com/Iroom-gbs/tritone/releases/download/beta/tritone-beta.zip)
+다운로드: [Windows 1.16.5](https://github.com/Iroom-gbs/tritone/releases/download/beta/tritone-windows.zip)
 
 **아직 개발중인 버전으로 버그, 치우지 않은 쓰레기 등이 있습니다.**
 

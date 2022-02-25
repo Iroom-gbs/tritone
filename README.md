@@ -5,7 +5,7 @@
 # 🔉TRITONE
 **Minecraft proximity voice chat** made possible with the [discord-game-sdk](https://discord.com/developers/docs/game-sdk/sdk-starter-guide).
 
-Download: [Windows 1.16.5](https://github.com/Iroom-gbs/tritone/releases/download/beta/tritone-beta.zip)
+Download: [Windows 1.16.5](https://github.com/Iroom-gbs/tritone/releases/download/beta/tritone-windows.zip)
 
 **This mod is currently in beta! There may be some bugs.**
 
