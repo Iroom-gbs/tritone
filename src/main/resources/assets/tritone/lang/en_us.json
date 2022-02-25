@@ -8,5 +8,6 @@
   "STRING.tritone.muted": "You are muted",
   "STRING.tritone.unmuted": "You are unmuted",
   "STRING.tritone.inaudible": "You are inaudible",
-  "STRING.tritone.audible": "You are audible"
+  "STRING.tritone.audible": "You are audible",
+  "STRING.tritone.connecting": "Connecting"
 }

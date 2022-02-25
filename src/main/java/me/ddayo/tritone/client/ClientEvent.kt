@@ -53,7 +53,7 @@ class ClientEvent {
         if(DiscordAPI.currentLobby == 0L) {
             RenderUtil.bindTexture("testwhite.png")
             RenderUtil.renderRect(0, 0, 60, 25)
-            Minecraft.getInstance().fontRenderer.drawString(MatrixStack(), "연결중입니다...", 0.0f, 0.0f, 0x000000)
+            Minecraft.getInstance().fontRenderer.drawString(MatrixStack(), MinecraftStringUtil.getString("connecting"), 0.0f, 0.0f, 0x000000)
         }
     }
 
