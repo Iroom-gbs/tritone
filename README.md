@@ -50,7 +50,7 @@ This prevents voice chatting with unwanted people.
 ## 🚩Roadmap
 
 ### InProgress
-* GUI
+* GUI <- Almost Done
 * Forge 1.12 support
 
 ### Planned
