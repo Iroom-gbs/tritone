@@ -76,7 +76,6 @@ pub extern fn Java_me_iroom_tritone_DiscordAPI_initialize(env: JNIEnv, object: j
     unsafe { VM = Some(env.get_java_vm().unwrap()); }
 
     unsafe {
-        //941752061945581608
         let mut d = Discord::new(clientKey).unwrap();
         *d.event_handler_mut() = Some(DiscordEvent::default());
         DISCORD = Some(d);
