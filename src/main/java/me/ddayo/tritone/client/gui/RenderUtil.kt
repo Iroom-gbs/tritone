@@ -1,5 +1,6 @@
 package me.ddayo.tritone.client.gui
 
+import com.google.gson.JsonParser
 import me.ddayo.tritone.Tritone
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screen.Screen
@@ -9,7 +10,9 @@ import org.lwjgl.stb.STBImage
 import java.awt.image.BufferedImage
 import java.awt.image.DataBufferByte
 import java.io.File
+import java.net.URL
 import java.nio.ByteBuffer
+import java.util.*
 
 object RenderUtil {
     private fun bindTexture(tex: String) = Minecraft.getInstance().textureManager.bindTexture(ResourceLocation(Tritone.MOD_ID, "textures/$tex"))
@@ -122,4 +125,45 @@ object RenderUtil {
     }
 
     fun removeTexture(tex: String) = GL21.glDeleteTextures(images[tex]!!)
+
+
+    private val skinData = emptyMap<String, Int>().toMutableMap()
+    @JvmStatic
+    fun tryGetSkin(uuid: String): Int {
+        if(skinData.containsKey(uuid)) return skinData[uuid]!!
+        val base64 = Base64.getDecoder().decode(JsonParser().parse(URL("https://sessionserver.mojang.com/session/minecraft/profile/$uuid").readText()).asJsonObject.getAsJsonArray("properties").first { it.asJsonObject.get("name").asString == "textures" }.asJsonObject.get("value").asString).decodeToString()
+
+        val imageBytes = URL(JsonParser().parse(base64).asJsonObject.getAsJsonObject("textures").getAsJsonObject("SKIN")["url"].asString).openStream().readBytes()
+        val imageBuffer = ByteBuffer.allocateDirect(imageBytes.size)
+        imageBuffer.put(imageBytes)
+        imageBuffer.flip()
+        val x = intArrayOf(0)
+        val y = intArrayOf(0)
+        val c = intArrayOf(0)
+
+        STBImage.stbi_load_from_memory(
+            imageBuffer, x, y, c, 4
+        )
+
+        val tex = GL21.glGenTextures()
+        useTexture(tex) {
+            GL21.glTexParameteri(GL21.GL_TEXTURE_2D, GL21.GL_TEXTURE_WRAP_S, GL21.GL_CLAMP_TO_EDGE)
+            GL21.glTexParameteri(GL21.GL_TEXTURE_2D, GL21.GL_TEXTURE_WRAP_T, GL21.GL_CLAMP_TO_EDGE)
+            GL21.glTexParameteri(GL21.GL_TEXTURE_2D, GL21.GL_TEXTURE_MIN_FILTER, GL21.GL_LINEAR)
+            GL21.glTexParameteri(GL21.GL_TEXTURE_2D, GL21.GL_TEXTURE_MAG_FILTER, GL21.GL_LINEAR)
+
+            GL21.glTexImage2D(
+                GL21.GL_TEXTURE_2D,
+                0,
+                GL21.GL_RGBA,
+                x[0],
+                y[0],
+                0,
+                GL21.GL_RGBA,
+                GL21.GL_UNSIGNED_BYTE,
+                imageBuffer
+            )
+        }
+        return tex
+    }
 }

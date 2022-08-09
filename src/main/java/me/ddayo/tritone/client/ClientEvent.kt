@@ -2,7 +2,6 @@ package me.ddayo.tritone.client
 
 import com.mojang.blaze3d.matrix.MatrixStack
 import me.ddayo.tritone.client.util.MinecraftStringUtil
-import me.ddayo.tritone.client.util.RenderUtil
 import me.iroom.tritone.DiscordAPI
 import me.iroom.tritone.util.Vector3D
 import net.minecraft.client.Minecraft

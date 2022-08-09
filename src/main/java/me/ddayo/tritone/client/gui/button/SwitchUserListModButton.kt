@@ -2,7 +2,6 @@ package me.ddayo.tritone.client.gui.button
 
 import com.mojang.blaze3d.matrix.MatrixStack
 import me.ddayo.tritone.client.gui.ParticipantGui
-import me.ddayo.tritone.client.util.RenderUtil
 import net.minecraft.client.gui.widget.button.Button
 import net.minecraft.util.text.StringTextComponent
 
