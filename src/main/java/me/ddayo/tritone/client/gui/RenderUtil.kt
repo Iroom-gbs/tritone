@@ -35,24 +35,31 @@ object RenderUtil {
         withValidate(x)
     }
 
-    private fun bindBufferedImageTexture(str: String, image: BufferedImage) {
-        if(!images.containsKey(str)) {
-            val tex = GL21.glGenTextures()
-            useTexture(tex) {
-                GL21.glTexParameteri(GL21.GL_TEXTURE_2D, GL21.GL_TEXTURE_WRAP_S, GL21.GL_CLAMP_TO_EDGE)
-                GL21.glTexParameteri(GL21.GL_TEXTURE_2D, GL21.GL_TEXTURE_WRAP_T, GL21.GL_CLAMP_TO_EDGE)
-                GL21.glTexParameteri(GL21.GL_TEXTURE_2D, GL21.GL_TEXTURE_MIN_FILTER, GL21.GL_LINEAR)
-                GL21.glTexParameteri(GL21.GL_TEXTURE_2D, GL21.GL_TEXTURE_MAG_FILTER, GL21.GL_LINEAR)
+    private fun registerBufferedImage(image: BufferedImage): Int {
+        val tex = GL21.glGenTextures()
+        useTexture(tex) {
+            GL21.glTexParameteri(GL21.GL_TEXTURE_2D, GL21.GL_TEXTURE_WRAP_S, GL21.GL_CLAMP_TO_EDGE)
+            GL21.glTexParameteri(GL21.GL_TEXTURE_2D, GL21.GL_TEXTURE_WRAP_T, GL21.GL_CLAMP_TO_EDGE)
+            GL21.glTexParameteri(GL21.GL_TEXTURE_2D, GL21.GL_TEXTURE_MIN_FILTER, GL21.GL_LINEAR)
+            GL21.glTexParameteri(GL21.GL_TEXTURE_2D, GL21.GL_TEXTURE_MAG_FILTER, GL21.GL_LINEAR)
 
-                val bytes = (image.raster.dataBuffer as DataBufferByte).data
-                val buf = ByteBuffer.allocateDirect(bytes.size)
-                buf.put(bytes)
-                buf.flip()
-                GL21.glTexImage2D(GL21.GL_TEXTURE_2D, 0, GL21.GL_RGB, image.width, image.height, 0, GL21.GL_RGB, GL21.GL_UNSIGNED_BYTE, buf)
-                images[str] = tex
-            }
+            val bytes = (image.raster.dataBuffer as DataBufferByte).data
+            val buf = ByteBuffer.allocateDirect(bytes.size)
+            buf.put(bytes)
+            buf.flip()
+            GL21.glTexImage2D(
+                GL21.GL_TEXTURE_2D,
+                0,
+                GL21.GL_RGB,
+                image.width,
+                image.height,
+                0,
+                GL21.GL_RGB,
+                GL21.GL_UNSIGNED_BYTE,
+                buf
+            )
         }
-        GL21.glBindTexture(GL21.GL_TEXTURE_2D, images[str]!!)
+        return tex
     }
 
     fun bindGrayscaleBuffer(buf: ByteBuffer, width: Int, height: Int): Int {
