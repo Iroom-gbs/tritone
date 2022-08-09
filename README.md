@@ -51,16 +51,16 @@ This prevents voice chatting with unwanted people.
 
 ### InProgress
 * GUI <- Almost Done
-* Forge 1.12 support
+* MacOS support
 
 ### Planned
 * Forge 1.18 support
 * Separation of lobbies by server
-* MacOS support
 * Multiple language support
 
 ### Someday...
 * Fabric support
+* Forge 1.12 support
 * Forge 1.19+ support
    
 ## For development...
