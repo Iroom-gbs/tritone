@@ -1,3 +1,4 @@
+# IMPORTANT: THIS MOD USES DISCORD GAME SDK THAT WILL GOING TO DEPRECATED ON MAY 2, 2023. 
 ![Logo](./image/tritonelogo.jpg)
 
 [Korean(한국어) Readme](./README_ko.md)
